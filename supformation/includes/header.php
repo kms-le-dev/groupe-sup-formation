@@ -5,7 +5,7 @@ $user = current_user();
 <header class="site-header">
   <div class="container header-inner">
     <div class="brand">
-      <a href="<?=BASE_URL?>"><img src="assets/logo.png" alt="logo" class="logo"></a>
+      <a href="../public/index.php"><img src="assets/logo.png" alt="logo" class="logo"></a>
     </div>
     <nav class="main-nav">
       <a href="enseignement.php">Enseignement Supérieur</a>
@@ -16,7 +16,7 @@ $user = current_user();
     <div class="auth">
       <?php if ($user): ?>
         <span>Salut, <?=htmlspecialchars($user['first_name'])?></span>
-        <a href="../logout.php" class="btn small">Déconnexion</a>
+        <a href="logout.php" class="btn small">Déconnexion</a>
         <?php if (is_admin()): ?>
           <a href="../admin/dashboard.php" class="btn small">Admin</a>
         <?php endif; ?>

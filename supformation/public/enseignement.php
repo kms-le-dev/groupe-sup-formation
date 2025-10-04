@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/header.php';
+// header will be included after <body> so the <head> section (CSS links) is loaded first
 
 // Récupérer l'ID du domaine "Enseignement Supérieur"
 $stmt = $pdo->prepare("SELECT id FROM domains WHERE title = ?");
@@ -28,8 +28,7 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-
-<link rel="stylesheet" href="assets/css/style.css">
+<?php include __DIR__ . '/../includes/header.php'; ?>
 
 <h1>Enseignement Supérieur</h1>
 

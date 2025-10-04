@@ -17,15 +17,28 @@ function verify_csrf_token($token): bool {
 function current_user(): ?array {
     global $pdo;
     if (!empty($_SESSION['user_id'])) {
-        $stmt = $pdo->prepare("SELECT id, role_id, first_name, last_name, email FROM users WHERE id = :id LIMIT 1");
-        $stmt->execute([':id'=>$_SESSION['user_id']]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        // Select all and map in PHP to avoid SQL errors when columns differ between environments
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $_SESSION['user_id']]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+        // map names
+        $first = $row['prenom'] ?? $row['first_name'] ?? ($row['prenom'] ?? '');
+        $last = $row['nom'] ?? $row['last_name'] ?? ($row['nom'] ?? '');
+        return [
+            'id' => $row['id'],
+            'role_id' => $row['role_id'] ?? null,
+            'first_name' => $first,
+            'last_name' => $last,
+            'email' => $row['email'] ?? null,
+        ];
     }
     return null;
 }
 function is_admin(): bool {
     $u = current_user();
-    return $u && $u['role_id'] == 2; // role 2 = admin
+    // Application requirement: only role_id === 2 is admin
+    return $u && isset($u['role_id']) && (int)$u['role_id'] === 2;
 }
 
 /* HTML escape helper */
