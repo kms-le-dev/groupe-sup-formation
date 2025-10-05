@@ -3,20 +3,62 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/header.php';
 
-// Récupérer l'ID du domaine "Enseignement Supérieur"
-$stmt = $pdo->prepare("SELECT id FROM domains WHERE title = ?");
-$stmt->execute(['Enseignement Supérieur']);
-$domain = $stmt->fetch(PDO::FETCH_ASSOC);
-$domain_id = $domain['id'] ?? 0;
+// Récupérer les publications pour le domaine Enseignement (fallback pour anciens schémas)
+$publications = [];
+$domain_id = 0;
+try {
+  $stmt = $pdo->prepare("SELECT id FROM domains WHERE slug = ?");
+  $stmt->execute(['enseignement']);
+  $domain = $stmt->fetch(PDO::FETCH_ASSOC);
+  $domain_id = $domain['id'] ?? 0;
+} catch (PDOException $e) {
+  $domain_id = 0;
+}
 
-// Récupérer les publications associées à ce domaine
-$stmt = $pdo->prepare("SELECT p.*, m.filename AS media_file 
-                       FROM publications p
-                       LEFT JOIN media m ON p.media_id = m.id
-                       WHERE p.domain_id = ? AND p.status = 'published'
-                       ORDER BY p.published_at DESC");
-$stmt->execute([$domain_id]);
-$publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($domain_id) {
+  try {
+    $stmt = $pdo->prepare(
+      "SELECT p.*, m.filename AS media_file 
+       FROM publications p
+       LEFT JOIN media m ON p.media_id = m.id
+       WHERE p.domain_id = ? AND p.status = 'published'
+       ORDER BY p.published_at DESC"
+    );
+    $stmt->execute([$domain_id]);
+    $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (PDOException $e) {
+    $publications = [];
+  }
+}
+
+if (empty($publications)) {
+  try {
+    $stmt = $pdo->prepare(
+      "SELECT p.*, m.filename AS media_file 
+       FROM publications p
+       LEFT JOIN media m ON p.media_id = m.id
+       WHERE p.domaine = ?
+       ORDER BY p.created_at DESC"
+    );
+    $stmt->execute(['enseignement']);
+    $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (PDOException $e) {
+    try {
+      $stmt = $pdo->prepare(
+        "SELECT p.*, m.filename AS media_file 
+         FROM publications p
+         LEFT JOIN media m ON p.media_id = m.id
+         JOIN domains d ON p.domain_id = d.id
+         WHERE d.title = ? AND p.status = 'published'
+         ORDER BY p.published_at DESC"
+      );
+      $stmt->execute(['Enseignement Supérieur']);
+      $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      $publications = [];
+    }
+  }
+}
 ?>
 
 <!doctype html>
@@ -88,12 +130,11 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($publications as $pub): ?>
             <div class="publication">
                 <h4><?= e($pub['title']) ?></h4>
-                <?php if(!empty($pub['excerpt'])): ?>
-                    <p><?= e($pub['excerpt']) ?></p>
-                <?php endif; ?>
-                <?php if(!empty($pub['content'])): ?>
-                    <p><?= e($pub['content']) ?></p>
-                <?php endif; ?>
+        <?php if(!empty($pub['content'])): ?>
+          <p><?= e($pub['content']) ?></p>
+        <?php elseif(!empty($pub['excerpt'])): ?>
+          <p><?= e($pub['excerpt']) ?></p>
+        <?php endif; ?>
 
                 <?php if (!empty($pub['media_file'])): ?>
                     <?php $ext = pathinfo($pub['media_file'], PATHINFO_EXTENSION); ?>

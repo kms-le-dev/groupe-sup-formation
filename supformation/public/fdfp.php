@@ -4,22 +4,79 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/header.php';
 
-// Récupérer l'ID du domaine "FDFP"
-$stmt = $pdo->prepare("SELECT id FROM domains WHERE slug = ?");
-$stmt->execute(['fdfp']); // ou 'cabinet-fdfp' selon ton slug
-$domain = $stmt->fetch(PDO::FETCH_ASSOC);
-$domain_id = $domain['id'] ?? 0;
+// Récupérer l'ID du domaine "FDFP" (tentative) et récupérer les publications.
+$domain_id = 0;
+$publications = [];
+try {
+  // Essayer plusieurs slugs possibles
+  $slugs = ['fdfp','cabinet-fdfp','cabinet fdfp'];
+  $domain = null;
+  foreach ($slugs as $s) {
+    $stmt = $pdo->prepare("SELECT id FROM domains WHERE slug = ?");
+    $stmt->execute([$s]);
+    $domain = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($domain) break;
+  }
+  // Si pas trouvé, essayer une recherche plus large (LIKE) ou par title
+  if (!$domain) {
+    $stmt = $pdo->prepare("SELECT id FROM domains WHERE slug LIKE ? OR title LIKE ? LIMIT 1");
+    $stmt->execute(['%fdfp%','%FDFP%']);
+    $domain = $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  $domain_id = $domain['id'] ?? 0;
+} catch (PDOException $e) {
+  // table domains peut ne pas exister — on ignore, on utilisera un fallback
+  $domain_id = 0;
+}
 
-// Récupérer les publications associées à ce domaine
-$stmt = $pdo->prepare("
-    SELECT p.*, m.filename AS media_file 
-    FROM publications p
-    LEFT JOIN media m ON p.media_id = m.id
-    WHERE p.domain_id = ? AND p.status = 'published'
-    ORDER BY p.published_at DESC
-");
-$stmt->execute([$domain_id]);
-$publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Première tentative : publications référencées par domain_id (nouveau schéma)
+if ($domain_id) {
+  try {
+    $stmt = $pdo->prepare(
+      "SELECT p.*, m.filename AS media_file 
+       FROM publications p
+       LEFT JOIN media m ON p.media_id = m.id
+       WHERE p.domain_id = ? AND p.status = 'published'
+       ORDER BY p.published_at DESC"
+    );
+    $stmt->execute([$domain_id]);
+    $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (PDOException $e) {
+    // si la structure est différente, on passera au fallback
+    $publications = [];
+  }
+}
+
+// Fallback : anciene structure où publications.domaine est une colonne ENUM ('fdfp')
+if (empty($publications)) {
+  try {
+    $stmt = $pdo->prepare(
+      "SELECT p.*, m.filename AS media_file 
+       FROM publications p
+       LEFT JOIN media m ON p.media_id = m.id
+       WHERE p.domaine = ? 
+       ORDER BY p.created_at DESC"
+    );
+    $stmt->execute(['fdfp']);
+    $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } catch (PDOException $e) {
+    // colonne 'domaine' peut ne pas exister — en dernier recours, essayer par title dans domains
+    try {
+      $stmt = $pdo->prepare(
+        "SELECT p.*, m.filename AS media_file 
+         FROM publications p
+         LEFT JOIN media m ON p.media_id = m.id
+         JOIN domains d ON p.domain_id = d.id
+         WHERE d.slug = ? AND p.status = 'published'
+         ORDER BY p.published_at DESC"
+      );
+      $stmt->execute(['fdfp']);
+      $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      $publications = [];
+    }
+  }
+}
 ?>
 
 
@@ -90,21 +147,35 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="publications">
     <h3>Actualités & Publications</h3>
     <?php if ($publications): ?>
-        <?php foreach ($publications as $pub): ?>
-            <div class="publication">
-                <h4><?= e($pub['titre']) ?></h4>
-                <p><?= e($pub['contenu']) ?></p>
-                <?php if ($pub['media']): ?>
-                    <?php $ext = pathinfo($pub['media'], PATHINFO_EXTENSION); ?>
-                    <?php if (in_array($ext, ['jpg','png','gif'])): ?>
-                        <img src="uploads/<?= e($pub['media']) ?>" alt="">
-                    <?php elseif ($ext === 'mp4'): ?>
-                        <video src="uploads/<?= e($pub['media']) ?>" controls></video>
-                    <?php elseif ($ext === 'pdf'): ?>
-                        <a href="uploads/<?= e($pub['media']) ?>" target="_blank">Voir PDF</a>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </div>
+        <?php foreach ($publications as $pub): 
+          $title = $pub['titre'] ?? $pub['title'] ?? '';
+          if (!empty($pub['contenu'])) {
+            $content = $pub['contenu'];
+          } elseif (!empty($pub['content'])) {
+            $content = $pub['content'];
+          } elseif (!empty($pub['excerpt'])) {
+            $content = $pub['excerpt'];
+          } else {
+            $content = '';
+          }
+          $media = $pub['media'] ?? $pub['media_file'] ?? $pub['filename'] ?? '';
+        ?>
+          <div class="publication">
+            <h4><?= e($title) ?></h4>
+            <?php if (!empty($content)): ?>
+              <p><?= e($content) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($media)): 
+              $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
+              if (in_array($ext, ['jpg','jpeg','png','gif'])): ?>
+                <img src="uploads/<?= e($media) ?>" alt="">
+              <?php elseif ($ext === 'mp4'): ?>
+                <video src="uploads/<?= e($media) ?>" controls></video>
+              <?php elseif ($ext === 'pdf'): ?>
+                <a href="uploads/<?= e($media) ?>" target="_blank">Voir PDF</a>
+              <?php endif; 
+            endif; ?>
+          </div>
         <?php endforeach; ?>
     <?php else: ?>
         <p>Aucune publication pour le moment.</p>

@@ -586,6 +586,45 @@ main.container button:not(:hover)::after {
       <button>Publier</button>
     </form>
   </section>
+  <section>
+    <h2>Publications</h2>
+    <?php if ($pubs): ?>
+      <?php foreach($pubs as $p): ?>
+        <div class="publication">
+          <h4><?=htmlspecialchars($p['title'])?></h4>
+          <?php if (!empty($p['excerpt'])): ?>
+            <p><?=nl2br(htmlspecialchars($p['excerpt']))?></p>
+          <?php endif; ?>
+          <?php if (!empty($p['content'])): ?>
+            <p><?=nl2br(htmlspecialchars($p['content']))?></p>
+          <?php endif; ?>
+          <?php
+            $media = $pdo->prepare("SELECT filename FROM media WHERE id = ?");
+            $media->execute([(int)$p['media_id']]);
+            $m = $media->fetch(PDO::FETCH_ASSOC);
+            if ($m && !empty($m['filename'])):
+              $ext = pathinfo($m['filename'], PATHINFO_EXTENSION);
+          ?>
+            <?php if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])): ?>
+              <img src="../public/uploads/<?=htmlspecialchars($m['filename'])?>" alt="">
+            <?php elseif (strtolower($ext) === 'mp4'): ?>
+              <video src="../public/uploads/<?=htmlspecialchars($m['filename'])?>" controls></video>
+            <?php endif; ?>
+          <?php endif; ?>
+          <div class="pub-controls">
+            <a class="edit" href="edit_publication.php?id=<?= (int)$p['id'] ?>">Modifier</a>
+            <form method="post" action="delete_publication.php" onsubmit="return confirm('Supprimer cette publication ?');">
+              <input type="hidden" name="csrf" value="<?=htmlspecialchars($csrf)?>">
+              <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
+              <button class="delete" type="submit">Supprimer</button>
+            </form>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <p>Aucune publication trouvée.</p>
+    <?php endif; ?>
+  </section>
 
   <section>
     <h2>Utilisateurs</h2>

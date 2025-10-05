@@ -1350,3 +1350,40 @@ html {
     max-width: 90%;
   }
 }
+
+/* Publications: centered media, responsive title and content */
+.publication {
+  max-width: 900px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+  text-align: center;
+}
+.publication h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.6rem;
+  color: #0f172a;
+  font-weight: 800;
+}
+.publication p { color: #334155; line-height:1.6; margin:0.5rem 0; }
+.publication img, .publication video {
+  display:block;
+  max-width:100%;
+  height:auto;
+  margin: 0.8rem auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(15,23,42,0.08);
+}
+.publication .pub-controls { margin-top:0.75rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+.publication .pub-controls form { display:inline-block; }
+.publication .pub-controls a, .publication .pub-controls button { padding:0.5rem .8rem; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+.publication .pub-controls a.edit { background:#2563eb; color:#fff; text-decoration:none; }
+.publication .pub-controls button.delete { background:#ef4444; color:#fff; border:none; }
+
+@media (max-width: 640px) {
+  .publication { padding: 1rem; margin: 1rem; }
+  .publication h4 { font-size: 1.25rem; }
+}
+
