@@ -572,6 +572,26 @@ html {
   }
 }
 
+/* Global: center the menu toggle for all headers on medium/smaller screens */
+@media (max-width: 1024px) {
+  /* ensure header inner centers the toggle */
+  .header-inner { justify-content: center !important; }
+  /* show and center the toggle itself (covers #adminMenuToggle too) */
+  .menu-toggle, #adminMenuToggle { display: flex !important; margin: 0 auto !important; }
+}
+
+/* Stronger centering fallback: absolutely center the toggle inside .site-header when other rules override centering */
+@media (max-width: 1024px) {
+  .site-header { position: relative; }
+  .menu-toggle, #adminMenuToggle {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 2000 !important;
+  }
+}
+
 /* Effet hover - pause animation */
 .carousel:hover img {
   animation-play-state: paused;

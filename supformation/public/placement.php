@@ -32,8 +32,7 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-
-<link rel="stylesheet" href="assets/css/style.css">
+ 
 <h1>Placement de Personnel</h1>
 
 <!-- Carousel -->
