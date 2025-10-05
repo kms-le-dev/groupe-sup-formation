@@ -4,6 +4,10 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 $csrf = generate_csrf_token();
 ?>
+
+
+
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -36,19 +40,75 @@ $csrf = generate_csrf_token();
     <div class="carousel-indicator"></div>
   </div>
 </div>
-    <div class="hero-intro">
+
+<div class="GSF">
+  <h1>Groupe Sup'Formation</h1>
+</div>
+
+<div class="media-section">
+  <div class="side-images left-images">
+    <img src="assets/0img.jpg" alt="Image gauche 1">
+    <img src="assets/1img.jpg" alt="Image gauche 2">
+  </div>
+
+  <div class="video-container">
+    <video autoplay muted loop playsinline>
+      <source src="assets/video.mp4" type="video/mp4">
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+  </div>
+
+  <div class="side-images right-images">
+    <img src="assets/2img.jpg" alt="Image droite 1">
+    <img src="assets/3img.jpg" alt="Image droite 2">
+  </div>
+</div>
+
+    <div class="GSF">
       <h1>Groupe Sup'Formation</h1>
       <p>Enseignement supérieur, placement de personnel, cabinet de formation FDFP.</p>
-      <div class="cta-row">
-        <a href="enseignement.php" class="btn">Enseignement Supérieur</a>
-        <a href="placement.php" class="btn">Placement de Personnel</a>
-        <a href="cabinet.php" class="btn">Cabinet FDFP</a>
-      </div>
     </div>
   </section>
+  <section class="services-section">
+  <h2 class="section-title">Nos Pôles de Formation</h2>
+  <p class="section-subtitle">
+    Découvrez nos domaines d’excellence et rejoignez le <strong>Groupe Sup’Formation</strong> pour booster votre avenir académique et professionnel.
+  </p>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="icon">🎓</div>
+      <h3>Enseignement Supérieur</h3>
+      <p>BTS, DUT, Licence, Master et Validation des Acquis de l’Expérience (VAE). Des parcours diplômants reconnus et adaptés au monde professionnel.</p>
+    </div>
+
+    <div class="service-card">
+      <div class="icon">💼</div>
+      <h3>Formation Qualifiante</h3>
+      <p>Des formations pratiques et courtes pour acquérir rapidement des compétences recherchées sur le marché du travail.</p>
+    </div>
+
+    <div class="service-card">
+      <div class="icon">🤝</div>
+      <h3>Placement & Insertion</h3>
+      <p>Accompagnement professionnel pour faciliter l’accès à l’emploi grâce à un vaste réseau d’entreprises partenaires.</p>
+    </div>
+
+    <div class="service-card">
+      <div class="icon">🏢</div>
+      <h3>Formation Professionnelle FDFP</h3>
+      <p>Formation continue pour les entreprises et institutions publiques, soutenue par le <strong>FDFP</strong>.</p>
+    </div>
+  </div>
+
+  <div class="cta-container">
+    <a href="register.php" class="btn-register">S'inscrire dès maintenant</a>
+  </div>
+</section>
+
 
   <section id="publications">
-    <h2>Dernières publications</h2>
+    
     <div class="posts-grid">
       <?php
       $stmt = $pdo->prepare("SELECT p.*, m.filename FROM publications p LEFT JOIN media m ON p.media_id = m.id WHERE p.status='published' ORDER BY published_at DESC LIMIT 6");

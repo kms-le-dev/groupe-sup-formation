@@ -14,6 +14,7 @@ $user = current_user();
     </button>
 
     <nav class="main-nav">
+      <a href="../public/index.php">Accueil</a>
       <a href="../public/enseignement.php">Enseignement Supérieur</a>
       <a href="../public/placement.php">Placement de Personnel</a>
       <a href="../public/fdfp.php">Cabinet FDFP</a>
@@ -39,16 +40,8 @@ $user = current_user();
         <a href="../public/index.php"><img src="../public/assets/logo.png" alt="logo" class="logo"></a>
       </div>
       <nav class="mobile-nav">
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <a href="../public/index.php">Accueil</a><br>
         <a href="../public/enseignement.php">Enseignement Supérieur</a>
         <a href="../public/placement.php">Placement de Personnel</a>
         <a href="../public/fdfp.php">Cabinet FDFP</a>

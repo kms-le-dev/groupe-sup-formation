@@ -57,12 +57,32 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <!-- Bloc infos -->
-<div class="info-bloc">
-    <h2>Nos services de placement</h2>
-    <p>
-        Offres d'emploi, recrutement pour entreprises, dépôt de CV, suivi personnalisé des candidats.
-    </p>
-</div>
+<!-- Section Placement et Insertion -->
+<section class="placement-section">
+  <div class="placement-container">
+    
+    <div class="placement-illustration">
+      <img src="assets/pla.jpg" alt="Placement de personnel" loading="lazy">
+      <div class="pulse-glow"></div>
+    </div>
+
+    <div class="placement-text">
+      <h2>🤝 Placement et Insertion de Personnel</h2>
+      <p>
+        Nous accompagnons les diplômés et les professionnels dans leur
+        <strong>insertion sur le marché de l’emploi</strong> grâce à un réseau
+        d’entreprises partenaires et une approche personnalisée.
+      </p>
+      <ul>
+        <li>🧭 <strong>Orientation professionnelle</strong> – Identification des opportunités adaptées à votre profil</li>
+        <li>💼 <strong>Placement en entreprise</strong> – Accès direct à des postes qualifiés</li>
+        <li>📈 <strong>Suivi de carrière</strong> – Coaching et accompagnement après le placement</li>
+      </ul>
+      <a href="#" class="btn-placement">Je veux être accompagné</a>
+    </div>
+  </div>
+</section>
+
 
 <!-- Zone publications -->
 <div class="publications">

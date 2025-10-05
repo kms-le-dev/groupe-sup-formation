@@ -31,4 +31,54 @@ document.addEventListener('DOMContentLoaded',function(){
       }
     });
   }
+  
+  // Scroll reveal with direction detection (non-intrusive)
+  (function(){
+    var lastY = window.scrollY || window.pageYOffset;
+    var ticking = false;
+
+    // targets: if element has .scroll-animate keep it; otherwise add it to common blocks
+    var autoTargets = Array.prototype.slice.call(document.querySelectorAll('.scroll-animate'));
+    var selectors = ['.service-card', '.post', '.GSF h1', '.carousel', '.media-section', '.services-section', '#publications'];
+    selectors.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){
+        if (autoTargets.indexOf(el) === -1) autoTargets.push(el);
+      });
+    });
+
+    // unify: add baseline class if missing
+    autoTargets.forEach(function(el){ if (!el.classList.contains('scroll-animate')) el.classList.add('scroll-animate'); });
+
+    function onScroll(){
+      var y = window.scrollY || window.pageYOffset;
+      var dir = (y > lastY) ? 'down' : 'up';
+      lastY = y;
+
+      autoTargets.forEach(function(el, idx){
+        var rect = el.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        // reveal when element enters 85% of viewport
+        if (rect.top < vh * 0.85 && rect.bottom > 0) {
+          // small stagger for multiple items
+          var delay = (el.dataset && el.dataset.delay) ? el.dataset.delay : (idx % 6) * 60;
+          el.style.setProperty('--delay', delay + 'ms');
+          el.classList.add('visible');
+          el.classList.remove('dir-up','dir-down');
+          el.classList.add('dir-' + dir);
+        } else {
+          // optionally hide when out of view (keeps it dynamic)
+          // remove visible to allow re-trigger on scroll back
+          el.classList.remove('visible');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', function(){
+      if (!ticking) { window.requestAnimationFrame(function(){ onScroll(); ticking = false; }); }
+      ticking = true;
+    }, { passive: true });
+
+    // initial run
+    onScroll();
+  })();
 });

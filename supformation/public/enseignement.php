@@ -34,9 +34,9 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- Carousel -->
 <!-- HTML amélioré avec indicateurs et coins -->
 <div class="carousel" id="mainCarousel">
-  <img src="assets/carousels/slide1.jpg" loading="lazy" alt="slide1">
-  <img src="assets/carousels/slide2.jpg" loading="lazy" alt="slide2">
-  <img src="assets/carousels/slide3.jpg" loading="lazy" alt="slide3">
+  <img src="assets/ens0.jpg" loading="lazy" alt="slide1">
+  <img src="assets/ens1.jpg" loading="lazy" alt="slide2">
+  <img src="assets/ens2.jpg" loading="lazy" alt="slide3">
   
   <!-- Coins animés -->
   <div class="carousel-corner top-left"></div>
@@ -53,12 +53,32 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <!-- Bloc infos -->
-<div class="info-bloc">
-    <h2>Nos Formations BTS / DUT / Licences / Master</h2>
-    <p>
-        Finance, Gestion, Marketing, Informatique, RH, Logistique, Qualité, Agriculture, Electrotechnique, etc...
-    </p>
-</div>
+<!-- Section Enseignement Supérieur -->
+<section class="enseignement-section">
+  <div class="enseignement-container">
+    <div class="enseignement-text">
+      <h2>🎓 Enseignement Supérieur</h2>
+      <p>
+        Découvrez nos formations de qualité conçues pour vous accompagner vers la réussite.
+        <br><br>
+        Nous proposons des parcours complets :
+      </p>
+      <ul>
+        <li><strong>BTS / DUT</strong> – Formations pratiques et professionnelles</li>
+        <li><strong>Licence</strong> – Développez vos compétences académiques et techniques</li>
+        <li><strong>Master</strong> – Devenez un expert dans votre domaine</li>
+        <li><strong>VAE</strong> – Valorisez votre expérience par un diplôme reconnu</li>
+      </ul>
+      <a href="#" class="btn-inscription">S’inscrire maintenant</a>
+    </div>
+
+    <div class="enseignement-illustration">
+      <img src="assets/ens.jpg" alt="Étudiants en formation" loading="lazy">
+      <div class="light-glow"></div>
+    </div>
+  </div>
+</section>
+
 
 
 <!-- Zone publications -->

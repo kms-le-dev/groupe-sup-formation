@@ -38,8 +38,8 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <h1>Cabinet de Formation FDFP</h1>
 
 <div class="carousel" id="mainCarousel">
-  <img src="assets/carousels/slide1.jpg" loading="lazy" alt="slide1">
-  <img src="assets/carousels/slide2.jpg" loading="lazy" alt="slide2">
+  <img src="assets/fdfp.jpg" loading="lazy" alt="slide1">
+  <img src="assets/fdfp0.jpg" loading="lazy" alt="slide2">
   <img src="assets/carousels/slide3.jpg" loading="lazy" alt="slide3">
   
   <!-- Coins animés -->
@@ -57,12 +57,34 @@ $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <!-- Bloc infos -->
-<div class="info-bloc">
-    <h2>Plans de formation & projets TPE / apprentissage</h2>
-    <p>
-        Nous offrons des formations certifiées FDFP et accompagnons les projets financés pour TPE et apprentissage.
-    </p>
-</div>
+<!-- Section Formation FDFP -->
+<section class="fdfp-section">
+  <div class="fdfp-container">
+
+    <div class="fdfp-illustration">
+      <img src="assets/fdfp.jpg" alt="Formation FDFP" loading="lazy">
+      <div class="fdfp-glow"></div>
+    </div>
+
+    <div class="fdfp-text">
+      <h2>🎓 Formation Professionnelle FDFP</h2>
+      <p>
+        Nous proposons des <strong>programmes de formation professionnelle</strong>
+        adaptés aux besoins des <strong>entreprises</strong> et des <strong>institutions publiques</strong>.
+        Notre objectif : renforcer les compétences, améliorer la productivité
+        et favoriser le développement durable des organisations.
+      </p>
+      <ul>
+        <li>🏢 <strong>Formation en entreprise</strong> – Sessions sur mesure selon vos besoins opérationnels</li>
+        <li>👩‍💼 <strong>Renforcement de capacités</strong> – Pour cadres, agents et responsables de service</li>
+        <li>📊 <strong>Programmes certifiés FDFP</strong> – Respectant les standards de qualité du fonds</li>
+      </ul>
+      <a href="#" class="btn-fdfp">Demander une formation</a>
+    </div>
+
+  </div>
+</section>
+
 
 <!-- Zone publications -->
 <div class="publications">

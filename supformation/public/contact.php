@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <!doctype html>
 <html lang="fr">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Groupe Sup'Formation</title>
@@ -83,14 +84,139 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <div class="map">
     <h3>Notre localisation</h3>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3972.137147803987!2d-4.005823425016036!3d5.396064294582986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNcKwMjMnNDUuOCJOIDTCsDAwJzExLjciVw!5e0!3m2!1sfr!2sci!4v1759691213289!5m2!1sfr!2sci" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
+
+<!-- Section Réseaux Sociaux -->
+<div class="social-container">
+  <h3>Suivez-nous</h3>
+  <div class="social-icons">
+    <a href="https://vm.tiktok.com/ZMH7dwMGmWB51-jTY0D/" target="_blank" class="social-icon tiktok">
+      <i class="fab fa-tiktok"></i>
+    </a>
+    <a href="mailto:groupesupformation@gmail.com" target="_blank" class="social-icon email">
+      <i class="fas fa-envelope"></i>
+    </a>
+    <a href="https://www.facebook.com/groupesupformation" target="_blank" class="social-icon facebook">
+      <i class="fab fa-facebook-f"></i>
+    </a>
+  </div>
+</div>
+
+<!-- FontAwesome pour les icônes -->
+<script src="https://kit.fontawesome.com/a2b3c4d5e6.js" crossorigin="anonymous"></script>
+
 <style>
+    /* css pour les social-media  */
+
+    /* Conteneur principal */
+.social-container {
+  text-align: center;
+  background: linear-gradient(120deg, #f0f9ff, #e0f2fe);
+  padding: 60px 20px;
+  border-radius: 20px;
+  max-width: 600px;
+  margin: 60px auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: fadeInUp 1.2s ease-out forwards;
+}
+
+/* Titre */
+.social-container h3 {
+  font-size: 1.8rem;
+  color: #0f172a;
+  margin-bottom: 25px;
+  position: relative;
+  letter-spacing: 1px;
+}
+.social-container h3::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #0284c7;
+  border-radius: 2px;
+}
+
+/* Icônes */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+}
+
+.social-icon {
+  font-size: 1.8rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Couleurs spécifiques */
+.social-icon.tiktok { background: #010101; }
+.social-icon.email { background: #f97316; }
+.social-icon.facebook { background: #1877f2; }
+
+/* Animation de survol */
+.social-icon:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(0,0,0,0.25);
+}
+
+.social-icon::before {
+  content: "";
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  top: 100%;
+  left: -10%;
+  background: rgba(255,255,255,0.2);
+  transform: rotate(45deg);
+  transition: 0.6s ease;
+}
+
+.social-icon:hover::before {
+  top: -20%;
+}
+
+/* Animation d’entrée */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .social-container {
+    padding: 40px 10px;
+  }
+  .social-icons {
+    gap: 25px;
+  }
+  .social-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+}
+
+
+
     /* Variables CSS pour une personnalisation facile */
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --secondary: #ec4899;
+  --primary: #0a8d36ff;
+  --primary-hover: #2edb1eff;
+  --secondary: #91e20eff;
   --success: #10b981;
   --error: #ef4444;
   --dark: #1e293b;
