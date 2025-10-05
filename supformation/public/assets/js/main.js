@@ -81,4 +81,24 @@ document.addEventListener('DOMContentLoaded',function(){
     // initial run
     onScroll();
   })();
+
+    // Ripple effect for download buttons
+    document.querySelectorAll('.download-link a').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        var rect = btn.getBoundingClientRect();
+        var ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = (e.clientX - rect.left - 50) + 'px';
+        ripple.style.top = (e.clientY - rect.top - 50) + 'px';
+        btn.appendChild(ripple);
+        ripple.style.opacity = '1';
+        ripple.style.transform = 'scale(1)';
+        setTimeout(function(){
+          ripple.style.opacity = '0';
+          ripple.style.transform = 'scale(1.5)';
+          setTimeout(function(){ if (ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 400);
+        }, 200);
+        // allow default download to proceed
+      });
+    });
 });

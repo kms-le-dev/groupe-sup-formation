@@ -138,8 +138,9 @@ if (empty($publications)) {
 
                 <?php if (!empty($pub['media_file'])): ?>
                     <?php $ext = pathinfo($pub['media_file'], PATHINFO_EXTENSION); ?>
-                    <?php if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])): ?>
-                        <img src="uploads/<?= e($pub['media_file']) ?>" alt="">
+          <?php if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])): ?>
+            <img src="uploads/<?= e($pub['media_file']) ?>" alt="">
+            <div class="download-link"><a href="uploads/<?= e($pub['media_file']) ?>" download="<?= e($pub['media_file']) ?>">Télécharger</a></div>
                     <?php elseif (strtolower($ext) === 'mp4'): ?>
                         <video src="uploads/<?= e($pub['media_file']) ?>" controls></video>
                     <?php elseif (strtolower($ext) === 'pdf'): ?>

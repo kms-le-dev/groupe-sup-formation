@@ -153,6 +153,7 @@ if (empty($publications)) {
               $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
               if (in_array($ext, ['jpg','jpeg','png','gif'])): ?>
                 <img src="uploads/<?= e($media) ?>" alt="">
+                <div class="download-link"><a href="uploads/<?= e($media) ?>" download="<?= e(basename($media)) ?>">Télécharger</a></div>
               <?php elseif ($ext === 'mp4'): ?>
                 <video src="uploads/<?= e($media) ?>" controls></video>
               <?php elseif ($ext === 'pdf'): ?>
