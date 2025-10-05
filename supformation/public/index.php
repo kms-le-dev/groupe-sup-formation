@@ -107,24 +107,7 @@ $csrf = generate_csrf_token();
 </section>
 
 
-  <section id="publications">
-    
-    <div class="posts-grid">
-      <?php
-      $stmt = $pdo->prepare("SELECT p.*, m.filename FROM publications p LEFT JOIN media m ON p.media_id = m.id WHERE p.status='published' ORDER BY published_at DESC LIMIT 6");
-      $stmt->execute();
-      while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
-      ?>
-        <article class="post">
-          <?php if ($row['filename']): ?>
-            <img src="uploads/<?=htmlspecialchars($row['filename'])?>" loading="lazy" alt="">
-          <?php endif; ?>
-          <h3><?=htmlspecialchars($row['title'])?></h3>
-          <p><?=nl2br(htmlspecialchars(substr($row['excerpt'] ?? strip_tags($row['content']),0,200)))?></p>
-        </article>
-      <?php endwhile; ?>
-    </div>
-  </section>
+  
 </main>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
