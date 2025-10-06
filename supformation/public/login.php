@@ -106,8 +106,72 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             margin-bottom: 1rem;
             font-weight: bold;
         }
-        .show-password {
+        /* Ligne mot de passe + checkbox alignées */
+        .password-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
             margin-bottom: 1rem;
+        }
+
+        .password-input {
+            flex: 1 1 auto;
+            min-width: 0; /* allow shrinking in narrow viewports */
+            padding-right: 0.75rem;
+        }
+
+        /* Custom checkbox styling */
+        .checkbox-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            color: #334155;
+            background: #fff;
+            padding: 0.35rem 0.5rem;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.12s ease;
+        }
+
+        .checkbox-wrap:hover {
+            border-color: rgba(34,197,94,0.12);
+            box-shadow: 0 2px 6px rgba(34,197,94,0.06);
+        }
+
+        .show-pass-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            background: #fff;
+            margin: 0;
+        }
+
+        .show-pass-checkbox:checked {
+            border-color: #16a34a;
+            background: linear-gradient(180deg,#16a34a 0%,#10b981 100%);
+        }
+
+        .show-pass-checkbox:checked::after {
+            content: '\2713';
+            color: #fff;
+            font-size: 12px;
+            position: absolute;
+            top: 1px;
+            left: 3px;
+        }
+
+        .checkbox-label {
+            font-size: 0.95rem;
+            color: #334155;
+            padding-left: 0.25rem;
         }
         .login-container a {
             color: #22c55e;
@@ -152,13 +216,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="email" name="email" id="email" required>
 
         <label for="password">Mot de passe *</label>
-        <input type="password" name="password" id="password" required>
-
-        <div class="show-password">
-            <input type="checkbox" id="show_pass"> Voir le mot de passe
+        <div class="password-row">
+            <input type="password" name="password" id="password" required class="password-input">
+            <label class="checkbox-wrap" for="show_pass">
+                <input type="checkbox" id="show_pass" class="show-pass-checkbox">
+                <span class="checkbox-label">Voir</span>
+            </label>
         </div>
 
         <button type="submit">Se connecter</button>
+
+        <p style="text-align:right; margin-top:0.5rem;">
+            <a href="reset_password.php" style="color:#0b84ff; text-decoration:none; font-weight:600;">Mot de passe oublié ?</a>
+        </p>
     </form>
 
     <p style="text-align:center; margin-top:1rem;">

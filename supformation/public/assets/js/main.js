@@ -101,4 +101,36 @@ document.addEventListener('DOMContentLoaded',function(){
         // allow default download to proceed
       });
     });
+
+      // Lightweight fallback for #customCarousel2 (testimonials) if Bootstrap JS not present
+      (function(){
+        if (!document.querySelector('#customCarousel2')) return;
+        // If Bootstrap's carousel exists we skip
+        if (window.jQuery && typeof jQuery.fn.carousel === 'function') return;
+
+        const carousel = document.querySelector('#customCarousel2');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const indicators = carousel.querySelectorAll('.carousel-indicators li');
+        let idx = 0;
+        function showCarousel(i){
+          items.forEach((it, j)=> it.classList.toggle('active', j===i));
+          if (indicators.length) indicators.forEach((ind,j)=> ind.classList.toggle('active', j===i));
+          idx = i;
+        }
+        // auto play
+        let timer = setInterval(()=> showCarousel((idx+1)%items.length), 4500);
+        // indicators click
+        indicators.forEach((ind, j)=> ind.addEventListener('click', ()=>{ showCarousel(j); clearInterval(timer); timer = setInterval(()=> showCarousel((idx+1)%items.length), 4500); }));
+        // keyboard
+        carousel.tabIndex = 0;
+        carousel.addEventListener('keydown', function(e){ if (e.key === 'ArrowLeft') { showCarousel((idx-1+items.length)%items.length); } else if (e.key === 'ArrowRight') { showCarousel((idx+1)%items.length); } });
+        // init
+        showCarousel(0);
+      })();
 });
+
+
+
+
+
+

@@ -189,6 +189,11 @@ button.btn:hover {
             <input type="email" id="email" name="email" required>
         </div>
 
+        <div class="form-group">
+            <label for="phone">Numéro de téléphone</label>
+            <input type="text" id="phone" name="phone" placeholder="Ex: +221770000000" required>
+        </div>
+
         <div class="form-group" style="position: relative;">
             <label for="password">Mot de passe</label>
             <input type="password" id="password" name="password" required>

@@ -14,6 +14,7 @@ $last_name = trim($_POST['last_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $confirm_password = $_POST['confirm_password'] ?? '';
+$phone = trim($_POST['phone'] ?? '');
 
 // Vérifications côté serveur
 $errors = [];
@@ -45,11 +46,11 @@ if (!empty($errors)) {
 // Hasher le mot de passe
 $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
-// Insérer l'utilisateur
-$stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, password_hash, is_active, created_at) VALUES (?, ?, ?, ?, 1, NOW())");
+// Insérer l'utilisateur (inclure phone si présent)
+$stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, password_hash, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, 1, NOW())");
 
 try {
-    $stmt->execute([$first_name, $last_name, $email, $password_hash]);
+    $stmt->execute([$first_name, $last_name, $email, $password_hash, $phone]);
     if ($isAjax) {
         header('Content-Type: application/json');
         echo json_encode(['status' => 'success', 'messages' => ['Inscription réussie !']]);

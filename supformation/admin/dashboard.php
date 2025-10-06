@@ -561,6 +561,18 @@ main.container button:not(:hover)::after {
     <?php elseif ($_GET['msg'] === 'invalid'): ?>
       <div style="padding:.7rem 1rem; background:#fef3c7; color:#7c2d12; border-radius:8px; margin-bottom:1rem;">Données invalides fournies.</div>
     <?php endif; ?>
+  <?php
+    // messages pour suppression utilisateur
+    if (!empty($_GET['msg']) && $_GET['msg'] === 'delete_ok') {
+      echo '<div style="padding:.7rem 1rem; background:#d1fae5; color:#064e3b; border-radius:8px; margin-bottom:1rem;">Utilisateur supprimé avec succès.</div>';
+    } elseif (!empty($_GET['msg']) && $_GET['msg'] === 'delete_err') {
+      echo '<div style="padding:.7rem 1rem; background:#fee2e2; color:#7f1d1d; border-radius:8px; margin-bottom:1rem;">Erreur lors de la suppression de l\'utilisateur.</div>';
+    } elseif (!empty($_GET['msg']) && $_GET['msg'] === 'not_found') {
+      echo '<div style="padding:.7rem 1rem; background:#fef3c7; color:#7c2d12; border-radius:8px; margin-bottom:1rem;">Utilisateur non trouvé.</div>';
+    } elseif (!empty($_GET['msg']) && $_GET['msg'] === 'cannot_self') {
+      echo '<div style="padding:.7rem 1rem; background:#fee2e2; color:#7f1d1d; border-radius:8px; margin-bottom:1rem;">Impossible de vous supprimer vous-même.</div>';
+    }
+  ?>
     <?php if ($_GET['msg'] === 'pass_ok'): ?>
       <div style="padding:.7rem 1rem; background:#d1fae5; color:#064e3b; border-radius:8px; margin-bottom:1rem;">Mot de passe mis à jour avec succès.</div>
     <?php elseif ($_GET['msg'] === 'pass_err'): ?>
@@ -589,38 +601,52 @@ main.container button:not(:hover)::after {
   <section>
     <h2>Publications</h2>
     <?php if ($pubs): ?>
-      <?php foreach($pubs as $p): ?>
-        <div class="publication">
-          <h4><?=htmlspecialchars($p['title'])?></h4>
-          <?php if (!empty($p['excerpt'])): ?>
-            <p><?=nl2br(htmlspecialchars($p['excerpt']))?></p>
-          <?php endif; ?>
-          <?php if (!empty($p['content'])): ?>
-            <p><?=nl2br(htmlspecialchars($p['content']))?></p>
-          <?php endif; ?>
+      <table>
+        <thead>
+          <tr>
+            <th>Actions</th>
+            <th>Titre</th>
+            <th>Domaine</th>
+            <th>Date</th>
+            <th>Images</th>
+            <th>Contenu</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($pubs as $p): ?>
           <?php
             $media = $pdo->prepare("SELECT filename FROM media WHERE id = ?");
             $media->execute([(int)$p['media_id']]);
             $m = $media->fetch(PDO::FETCH_ASSOC);
-            if ($m && !empty($m['filename'])):
+            $thumbHtml = '';
+            if ($m && !empty($m['filename'])) {
               $ext = pathinfo($m['filename'], PATHINFO_EXTENSION);
+              if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])) {
+                $thumb = htmlspecialchars($m['filename']);
+                $thumbHtml = "<img src=\"../public/uploads/{$thumb}\" alt=\"vignette\" style=\"width:80px;height:60px;object-fit:cover;border-radius:6px;\">";
+              } elseif (strtolower($ext) === 'mp4') {
+                $thumbHtml = "<video src=\"../public/uploads/".htmlspecialchars($m['filename'])."\" style=\"width:80px;height:60px;object-fit:cover;border-radius:6px;\" muted></video>";
+              }
+            }
           ?>
-            <?php if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])): ?>
-              <img src="../public/uploads/<?=htmlspecialchars($m['filename'])?>" alt="">
-            <?php elseif (strtolower($ext) === 'mp4'): ?>
-              <video src="../public/uploads/<?=htmlspecialchars($m['filename'])?>" controls></video>
-            <?php endif; ?>
-          <?php endif; ?>
-          <div class="pub-controls">
-            <a class="edit" href="edit_publication.php?id=<?= (int)$p['id'] ?>">Modifier</a>
-            <form method="post" action="delete_publication.php" onsubmit="return confirm('Supprimer cette publication ?');">
-              <input type="hidden" name="csrf" value="<?=htmlspecialchars($csrf)?>">
-              <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
-              <button class="delete" type="submit">Supprimer</button>
-            </form>
-          </div>
-        </div>
-      <?php endforeach; ?>
+          <tr>
+            <td style="white-space:nowrap;">
+              <a href="edit_publication.php?id=<?= (int)$p['id'] ?>" style="margin-right:6px;display:inline-block;padding:.35rem .5rem;background:#f3f4f6;border-radius:6px;text-decoration:none;color:#0f172a;border:1px solid #e5e7eb;">Modifier</a>
+              <form method="post" action="delete_publication.php" style="display:inline;" onsubmit="return confirm('Supprimer cette publication ?');">
+                <input type="hidden" name="csrf" value="<?=htmlspecialchars($csrf)?>">
+                <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
+                <button type="submit" style="padding:.35rem .5rem;background:#fee2e2;color:#7f1d1d;border-radius:6px;border:1px solid #fecaca;">Supprimer</button>
+              </form>
+            </td>
+            <td><?=htmlspecialchars($p['title'])?></td>
+            <td><?=htmlspecialchars($p['domain'] ?? '')?></td>
+            <td><?=htmlspecialchars($p['created_at'])?></td>
+            <td><?= $thumbHtml ?></td>
+            <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?=htmlspecialchars($p['excerpt'] ?: (strlen($p['content'])>200?substr($p['content'],0,197).'...':$p['content']))?></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
     <?php else: ?>
       <p>Aucune publication trouvée.</p>
     <?php endif; ?>
