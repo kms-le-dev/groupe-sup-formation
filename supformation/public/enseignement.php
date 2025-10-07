@@ -111,7 +111,7 @@ if (empty($publications)) {
         <li><strong>Master</strong> – Devenez un expert dans votre domaine</li>
         <li><strong>VAE</strong> – Valorisez votre expérience par un diplôme reconnu</li>
       </ul>
-      <a href="#" class="btn-inscription">S’inscrire maintenant</a>
+      <a href="./formulaire.php" class="btn-inscription">S’inscrire maintenant</a>
     </div>
 
     <div class="enseignement-illustration">

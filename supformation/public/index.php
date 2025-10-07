@@ -19,6 +19,154 @@ $csrf = generate_csrf_token();
     <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.css" /> 
 </head>
+
+
+
+<style>
+/* Reset */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* Container */
+.c33carousel-container{
+  position:relative;
+  width:100%;
+  max-width:1000px;
+  height:350px;
+  overflow:hidden;
+  margin:50px auto;
+  border-radius:16px;
+  box-shadow:0 8px 28px rgba(10,10,20,0.2);
+}
+
+/* Track */
+.c33carousel-track{
+  display:flex;
+  width:calc(200%); /* pour boucle infinie */
+  animation: c33scroll 20s linear infinite;
+}
+
+/* Slide */
+.c33carousel-slide{
+  flex:1 0 25%;
+  position:relative;
+}
+
+.c33carousel-slide img{
+  width:100%;
+  height:350px;
+  object-fit:cover;
+  border-radius:16px;
+  transition: transform 2s ease-in-out;
+}
+.c33carousel-slide img:hover{
+  transform: scale(1.05);
+}
+
+/* Meta texte */
+.c33meta{
+  position:absolute;
+  bottom:12px;
+  left:12px;
+  background:rgba(0,0,0,0.45);
+  color:#fff;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:0.9rem;
+}
+
+/* Animation continue */
+@keyframes c33scroll{
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Buttons */
+.c33btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  background:rgba(0,0,0,0.4);
+  color:#fff;
+  font-size:1.6rem;
+  cursor:pointer;
+  z-index:10;
+  transition:background 0.3s;
+}
+.c33btn:hover{background:rgba(0,0,0,0.7)}
+.c33btn.prev{left:10px;}
+.c33btn.next{right:10px;}
+
+/* Dots */
+.c33dots{
+  position:absolute;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+  z-index:10;
+}
+.c33dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ffffff44;
+  cursor:pointer;
+  transition:background 0.3s, transform 0.3s;
+}
+.c33dot.active{
+  background:#36b8ff;
+  transform:scale(1.3);
+}
+
+
+
+/* Responsive amélioré pour défilement continu à 4 images */
+@media (max-width:1024px){
+  .c33carousel-slide{
+    flex: 1 0 25%; /* toujours 4 images visibles mais plus petites */
+  }
+  .c33carousel-slide img{
+    height: 300px;
+  }
+}
+
+@media (max-width:768px){
+  .c33carousel-slide{
+    flex: 1 0 25%; /* 4 images visibles, largeur réduite */
+  }
+  .c33carousel-slide img{
+    height: 240px;
+  }
+}
+
+@media (max-width:480px){
+  .c33carousel-slide{
+    flex: 1 0 25%; /* 4 images visibles, s’adaptent au petit écran */
+  }
+  .c33carousel-slide img{
+    height: 180px;
+  }
+}
+
+@media (max-width:360px){
+  .c33carousel-slide img{
+    height: 160px;
+  }
+}
+
+
+</style>
+
+
+
+
+
+
 <body>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -104,11 +252,115 @@ $csrf = generate_csrf_token();
     </div>
   </div>
 
-   
-
-  <div class="cta-container">
-    <a href="register.php" class="btn-register">S'inscrire dès maintenant</a>
+  <div class="GSF">
+  <h1>Notre Etablissement</h1>
   </div>
+
+  <div class="c33promo">
+  <h2>Envie de vous spécialiser et de booster votre carrière ? Envie de continuer vos études et d'obtenir le BAC, DUT, BTS, LICENCE, MASTER ?</h2>
+  <p>
+    Acquérir des compétences solides dans un domaine précis et être prêt(e) à conquérir le marché de l’emploi n’a jamais été aussi simple.<br>
+    Si vous recherchez une <strong>formation qualifiante et adaptée à vos ambitions</strong>, notre établissement est <strong>le meilleur choix pour vous</strong>.<br>
+    <span class="c33cta">Inscrivez‑vous dès maintenant et donnez un véritable coup d’accélérateur à votre avenir professionnel !</span>
+  </p>
+  </div>
+
+  <style>
+    .c33promo{
+  max-width:800px;
+  margin:50px auto;
+  padding:30px 40px;
+  border-radius:20px;
+  background: #205009ff; 
+  color: #f32b2bff;
+  box-shadow:0 10px 40px rgba(0,0,0,0.2);
+  text-align:center;
+  animation:c33fadeSlide 2s ease-out;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.c33promo:hover{
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:0 15px 50px rgba(0,0,0,0.3);
+}
+
+.c33promo h2{
+  font-size:2rem;
+  margin-bottom:15px;
+  background: linear-gradient(90deg, #f8f7f7ff, #ffffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.c33promo p{
+  font-size:1.1rem;
+  line-height:1.7;
+}
+
+.c33cta{
+  display:block;
+  margin-top:20px;
+  font-weight:bold;
+  font-size:1.2rem;
+  color:#fff;
+  background: #f34b4bff;
+  padding:12px 20px;
+  border-radius:50px;
+  cursor:pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.c33cta:hover{
+  background: #d47070ff;
+  transform: scale(1.05);
+}
+
+/* Animation fade + slide */
+@keyframes c33fadeSlide{
+  0%{opacity:0; transform: translateY(20px);}
+  100%{opacity:1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .c33promo{
+    padding:25px 20px;
+  }
+  .c33promo h2{font-size:1.6rem;}
+  .c33promo p{font-size:1rem;}
+  .c33cta{font-size:1.1rem; padding:10px 16px;}
+}
+@media(max-width:480px){
+  .c33promo h2{font-size:1.4rem;}
+  .c33promo p{font-size:0.95rem;}
+  .c33cta{font-size:1rem; padding:8px 14px;}
+}
+
+  </style>
+
+  <div class="c33carousel-container">
+  <div class="c33carousel-track">
+    <div class="c33carousel-slide active">
+      <img src="assets/local1.jpg" alt="Paysage urbain">
+      <div class="c33meta">GSF</div>
+    </div>
+    <div class="c33carousel-slide">
+      <img src="assets/local2.jpg" alt="Forêt">
+      <div class="c33meta">GSF</div>
+    </div>
+    <div class="c33carousel-slide">
+      <img src="assets/local3.jpg" alt="Architecture">
+      <div class="c33meta">GSF</div>
+    </div>
+    <div class="c33carousel-slide">
+      <img src="assets/local4.jpg" alt="Océan">
+      <div class="c33meta">GSF</div>
+    </div>
+  </div>
+
+</div>
+  
 </section>
 
 
@@ -423,6 +675,52 @@ $csrf = generate_csrf_token();
     startAutoplay();
   });
 })();
+
+
+
+// carousel pour logement 
+
+const slides = document.querySelectorAll('.c33carousel-slide');
+const prevBtn = document.querySelector('.c33btn.prev');
+const nextBtn = document.querySelector('.c33btn.next');
+const dotsContainer = document.querySelector('.c33dots');
+const total = slides.length / 2; // slides uniques
+let index = 0;
+
+// créer les dots
+for(let i=0;i<total;i++){
+  const dot = document.createElement('button');
+  dot.className='c33dot';
+  if(i===0) dot.classList.add('active');
+  dot.dataset.index=i;
+  dotsContainer.appendChild(dot);
+}
+
+// fonction pour mettre à jour active slide
+function setActiveSlide(i){
+  const allDots = document.querySelectorAll('.c33dot');
+  allDots.forEach(d=>d.classList.remove('active'));
+  allDots[i].classList.add('active');
+  index=i;
+}
+
+// boutons navigation
+prevBtn.addEventListener('click',()=>{ setActiveSlide((index-1+total)%total); });
+nextBtn.addEventListener('click',()=>{ setActiveSlide((index+1)%total); });
+
+// dots navigation
+document.querySelectorAll('.c33dot').forEach(dot=>{
+  dot.addEventListener('click',(e)=>{
+    setActiveSlide(parseInt(e.target.dataset.index));
+  });
+});
+
+// pause au survol
+const container = document.querySelector('.c33carousel-container');
+const track = document.querySelector('.c33carousel-track');
+container.addEventListener('mouseenter', ()=>{ track.style.animationPlayState='paused'; });
+container.addEventListener('mouseleave', ()=>{ track.style.animationPlayState='running'; });
+
 </script>
 </body>
 </html>
