@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
+
+
 // formulaire.php
 // Remplace les valeurs ci-dessous par celles de ton projet
 $admin_email = "admin@moncentre.com"; // email qui recevra le PDF
@@ -62,7 +64,7 @@ h1{
   text-align:center;
   font-size:1.4rem;
   margin-bottom:18px;
-  color:var(--primary);
+  color: #05660dff;
 }
 
 .card{
@@ -136,6 +138,20 @@ label input[type="number"]{
   font-weight:600;
 }
 
+.btn2{
+  padding:10px 14px;
+  border-radius:10px;
+  border:none;
+  background: #e03c3cff;
+  cursor:pointer;
+  font-weight:600;
+  color: white;
+}
+
+.btn2:hover {
+    transform: scale(1.08);
+}
+
 .btn.primary{
   background:var(--primary);
   color:white;
@@ -174,7 +190,7 @@ label input[type="number"]{
 </style>
 
 <body>
-    <?php include __DIR__ . '/../includes/header.php'; ?>
+    
   <main class="container">
     <h1>FICHE D’INSCRIPTION — INFORMATIONS PERSONNELLES ET ACADÉMIQUES</h1>
 
@@ -283,8 +299,9 @@ label input[type="number"]{
       </section>
 
       <div class="actions">
-       <button type="button" id="previewPdfBtn" class="btn">Aperçu PDF</button>
-       <button type="button" id="paySendBtn" class="btn primary">Payer & Envoyer</button>
+        <a href="index.php" class="btn2" style="text-decoration:none;display:inline-block;line-height:28px;padding:8px 12px;">Retour à l'accueil</a>
+       <button type="button" id="previewPdfBtn" class="btn">Télécharger le PDF (obligatoire)</button>
+       <button type="button" id="paySendBtn" class="btn primary">Suivant</button>
       </div>
     </form>
 
@@ -603,49 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
-  // Pay & Send (à adapter selon vos besoins)
-  paySendBtn.addEventListener('click', async () => {
+  // Rediriger vers la page d'inscription (inscription.php) quand on clique sur Suivant
+  paySendBtn.addEventListener('click', (e) => {
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
-    
-    try {
-      const doc = await generatePdfDirect();
-      const pdfBlob = doc.output('blob');
-      
-      const base64Pdf = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(pdfBlob);
-      });
-
-      const formData = new FormData(form);
-      formData.append('pdf_base64', base64Pdf);
-      formData.append('pdf_filename', 'fiche_inscription.pdf');
-      
-      if (photoInput && photoInput.files[0]) {
-        formData.append('photo_file', photoInput.files[0]);
-      }
-
-      const res = await fetch('send_form.php', { method: 'POST', body: formData });
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        alert('Erreur serveur: ' + (json.message || 'Voir logs'));
-        return;
-      }
-
-      alert('Formulaire envoyé. Redirection vers le paiement...');
-      if (typeof PAYDUNYA_CHECKOUT_URL !== 'undefined' && PAYDUNYA_CHECKOUT_URL) {
-        window.location.href = PAYDUNYA_CHECKOUT_URL;
-      }
-      
-    } catch (err) {
-      console.error(err);
-      alert('Erreur: ' + err.message);
-    }
+    // Si vous voulez transférer les données du formulaire automatiquement vers inscription.php,
+    // on peut poster via un formulaire caché. Pour l'instant on redirige simplement.
+    window.location.href = 'inscription.php';
   });
 
 });

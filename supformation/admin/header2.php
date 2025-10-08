@@ -71,16 +71,23 @@ $user = current_user();
 #adminMenuToggle .hamburger::before { top:-7px; }
 #adminMenuToggle .hamburger::after { top:7px; }
 #adminMobilePanel { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center; }
-#adminMobilePanel .mobile-panel-inner { background:#fff; padding:1.5rem; border-radius:12px; width:min(92%,420px); text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+#adminMobilePanel .mobile-panel-inner { background:#fff; padding:1.5rem; border-radius:12px; width:min(92%,420px); text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2); transform-origin: center center; transition: transform 360ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease; opacity:0; transform: translateY(-8px) scale(.98); }
 
-/* On small screens, hide desktop chrome and center the toggle */
+/* On small screens, hide desktop chrome and show toggle aligned to right */
 @media (max-width:1024px){
   .main-nav, .auth, .brand { display:none !important; }
-  #adminMenuToggle { display:flex; }
-  .site-header { background: transparent !important; box-shadow:none !important; padding:0.30rem 0 !important; }
-  /* center the toggle horizontally inside header */
-  .header-inner { display:flex; align-items:center; justify-content:center; padding:1rem 1rem; }
+  #adminMenuToggle { display:flex; position: absolute; right: 12px; top: 12px; }
+  .site-header { background: transparent !important; box-shadow:none !important; padding:0.30rem 0 !important; position: sticky; top: 0; z-index: 999; }
+  /* center the inner header but leave toggle on right */
+  .header-inner { display:flex; align-items:center; justify-content:center; padding:1rem 1rem; position:relative; }
+  /* when panel open we will set panel inner to visible via JS */
+  #adminMobilePanel[aria-hidden="false"] .mobile-panel-inner { opacity:1; transform: translateY(0) scale(1); }
 }
+
+/* Center main navigation on wider screens */
+.header-inner { display:flex; align-items:center; justify-content:center; gap:1rem; }
+.main-nav { display:flex; gap:1.25rem; justify-content:center; align-items:center; }
+.main-nav a { text-decoration:none; color:#0f172a; font-weight:600; }
 
 /* admin mobile panel layout: logo centered on top and content (nav + auth) below */
 #adminMobilePanel .mobile-panel-inner { display:flex; flex-direction:column; align-items:center; gap:1rem; }
@@ -109,8 +116,8 @@ $user = current_user();
   text-transform:uppercase;
   background: #46b903ff;
   box-shadow: 0 8px 24px rgba(15,23,42,0.12);
-  transform: translateY(0) scale(1);
-  opacity:1;
+  transform: translateY(6px) scale(.98);
+  opacity:0;
   transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease, box-shadow 200ms ease;
 }
 #adminMobilePanel .mobile-nav a:hover,
@@ -123,6 +130,7 @@ $user = current_user();
   transform: translateY(0) scale(1);
   opacity:1;
 }
+
 
 </style>
 
@@ -205,4 +213,35 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 // logo is ensured when needed inside the DOMContentLoaded handler
+// Animate reveal of mobile-nav links when panel opens
+(function(){
+  function revealAdminLinks(panel){
+    var links = panel.querySelectorAll('.mobile-nav a');
+    links.forEach(function(l){ l.classList.remove('revealed'); });
+    links.forEach(function(link, idx){
+      setTimeout(function(){
+        link.classList.add('revealed');
+      }, 80 * idx + 150);
+    });
+  }
+  // observe attribute changes to animate when shown
+  var adminPanel = document.getElementById('adminMobilePanel');
+  if (adminPanel) {
+    var obs = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        if (m.attributeName === 'aria-hidden'){
+          if (adminPanel.getAttribute('aria-hidden') === 'false') {
+            // ensure inner CSS transition finishes then reveal links
+            setTimeout(function(){ revealAdminLinks(adminPanel); }, 60);
+          } else {
+            // when closed, remove revealed classes so next open replays
+            var links = adminPanel.querySelectorAll('.mobile-nav a');
+            links.forEach(function(l){ l.classList.remove('revealed'); });
+          }
+        }
+      });
+    });
+    obs.observe(adminPanel, { attributes: true });
+  }
+})();
 </script>

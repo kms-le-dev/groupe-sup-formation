@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $del->execute([':id' => $delId]);
   }
 
-  // Redirect to avoid resubmission. If headers already sent (file included after output), use JS fallback.
-  $redirectUrl = basename(__FILE__);
+  // Redirect to dashboard after deletion. If headers already sent (file included after output), use JS fallback.
+  $redirectUrl = 'dashboard.php';
   if (!headers_sent()) {
     header('Location: ' . $redirectUrl);
     exit;

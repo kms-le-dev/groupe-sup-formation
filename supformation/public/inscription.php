@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 $errors = [];
 $success = '';
@@ -103,7 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .notice{padding:10px;background:#fff8e6;border:1px solid #ffecb5;border-radius:8px}
   </style>
 </head>
+
 <body>
+
   <div class="wrapper">
     <h1>Inscription - Téléversement fiche</h1>
     <?php if(!empty($errors)): ?>
@@ -160,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="montant" id="montantBox">Montant: <span id="montantVal">0</span> FCFA</div>
 
       <div class="actions">
-        <button type="button" class="btn" id="calcBtn">Calculer montant</button>
+        <a href="index.php" class="btn" style="text-decoration:none;display:inline-block;line-height:28px;padding:8px 12px;">Retour à l'accueil</a>
         <button type="submit" class="btn">Passer au paiement</button>
       </div>
     </form>

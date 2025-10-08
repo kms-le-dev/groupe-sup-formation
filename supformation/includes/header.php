@@ -42,7 +42,7 @@ $user = current_user();
         <a href="../public/index.php"><img src="assets/logo.png" alt="logo" class="logo"></a>
       </div>
       <nav class="mobile-nav" aria-label="Menu mobile">
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         <a href="index.php">Accueil</a><br>
         <a href="enseignement.php">Enseignement Supérieur</a><br>
         <a href="placement.php">Placement de Personnel</a><br>
@@ -77,6 +77,11 @@ $user = current_user();
   justify-content: center;
   cursor: pointer;
 }
+
+/* Keep header visible on scroll and ensure the mobile toggle is fixed to the right */
+.site-header { position: sticky; top: 0; z-index: 9999; background: rgba(255,255,255,0.95); }
+
+.menu-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); }
 .menu-toggle .hamburger,
 .menu-toggle .hamburger::before,
 .menu-toggle .hamburger::after {
@@ -102,13 +107,14 @@ $user = current_user();
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.0);
   z-index: 9999;
   align-items: center;
   justify-content: center;
+  transition: background-color 260ms ease;
 }
 /* when open, make panel visible using .open to avoid inline styles manipulation */
-.mobile-panel.open { display: flex; }
+.mobile-panel.open { display: flex; background: rgba(0,0,0,0.45); }
 .mobile-panel-inner {
   background: #fff;
   padding: 1.5rem;
@@ -120,39 +126,46 @@ $user = current_user();
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* center vertically */
+  min-height: 60vh; /* ensure panel content is centered in viewport */
   gap: 1rem;
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 300ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease;
 }
 .brand-mobile .logo { height:64px; width:auto; display:block; margin:0 auto; }
-.mobile-nav {
+  .mobile-nav {
   display:flex;
   flex-direction:column;
   gap:0.75rem;
-  width:auto;
+  width:100%;
   align-items:center;
   /* center the nav horizontally and vertically inside the panel */
-  margin: auto;
-}
+  margin: 0 auto;
+  padding: 0; }
 
-.mobile-nav a {
-  display:inline-flex;
-  text-align: center;
-  align-items:center;
-  justify-content:center;
-  width:90%;
-  max-width:340px;
-  padding:0.5rem 1rem;
-  border-radius:50px;
-  text-decoration:none;
-  color:white;
-  font-weight:800;
-  letter-spacing:0.4px;
-  text-transform:uppercase;
-  background: #46b903ff;
-  box-shadow: 0 8px 24px rgba(15,23,42,0.12);
-  transform: translateY(10px) scale(0.98);
-  opacity:0;
-  
-}
+  .mobile-nav a {
+    display:block;
+    text-align: center;
+    align-items:center;
+    justify-content:center;
+    width: min(92%, 340px);
+    padding:0.5rem 1rem;
+    border-radius:50px;
+    text-decoration:none;
+    color:white;
+    font-weight:800;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    background: #46b903ff;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+    transform: translateY(16px) scale(0.98);
+    opacity:0;
+    margin: 0 auto;
+    transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease;
+  }
+  .mobile-nav a.revealed { transform: translateY(0) scale(1); opacity:1; }
+  .mobile-nav a:hover { transform: translateY(0) scale(1.03); box-shadow: 0 18px 40px rgba(15,23,42,0.16); }
 .mobile-nav a:hover,
 .mobile-nav a:focus {
   transform: translateY(0) scale(1.02);
@@ -175,6 +188,8 @@ $user = current_user();
   .menu-toggle { display: flex; }
   /* keep the header height minimal so only toggle occupies space */
   .header-inner { display:flex; align-items:center; justify-content:center; padding: 0.25rem 1rem; }
+  /* ensure menu toggle is on the right and visible */
+  .menu-toggle { display: flex; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); }
 }
 
 </style>
@@ -233,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function(){
       panel.classList.add('open');
       panel.setAttribute('aria-hidden','false');
       btn.setAttribute('aria-expanded','true');
+        // animate inner panel in after open to allow CSS transitions
+        try { var inner = panel.querySelector('.mobile-panel-inner'); if (inner) { inner.style.transform = 'translateY(0) scale(1)'; inner.style.opacity = '1'; } } catch(e){}
       // focus the panel for accessibility so Esc will work predictably
       var focusable = panel.querySelector('a, button, input, [tabindex]');
       if (focusable) focusable.focus();
