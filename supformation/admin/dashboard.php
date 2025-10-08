@@ -598,6 +598,8 @@ main.container button:not(:hover)::after {
       <button>Publier</button>
     </form>
   </section>
+
+  <?php include __DIR__ . '/inscriptions.php'; ?>
   <section>
     <h2>Publications</h2>
     <?php if ($pubs): ?>

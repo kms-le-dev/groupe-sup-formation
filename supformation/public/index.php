@@ -266,13 +266,14 @@ $csrf = generate_csrf_token();
   </div>
 
   <style>
+  
     .c33promo{
   max-width:800px;
   margin:50px auto;
   padding:30px 40px;
   border-radius:20px;
-  background: #205009ff; 
-  color: #f32b2bff;
+  background: #f5f8f4ff; 
+  color: #f51616ff;
   box-shadow:0 10px 40px rgba(0,0,0,0.2);
   text-align:center;
   animation:c33fadeSlide 2s ease-out;
@@ -288,7 +289,7 @@ $csrf = generate_csrf_token();
 .c33promo h2{
   font-size:2rem;
   margin-bottom:15px;
-  background: linear-gradient(90deg, #f8f7f7ff, #ffffffff);
+  background: #01743aff;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -303,18 +304,13 @@ $csrf = generate_csrf_token();
   margin-top:20px;
   font-weight:bold;
   font-size:1.2rem;
-  color:#fff;
-  background: #f34b4bff;
+  color:#01743aff;
   padding:12px 20px;
   border-radius:50px;
   cursor:pointer;
   transition: background 0.3s, transform 0.3s;
 }
 
-.c33cta:hover{
-  background: #d47070ff;
-  transform: scale(1.05);
-}
 
 /* Animation fade + slide */
 @keyframes c33fadeSlide{
