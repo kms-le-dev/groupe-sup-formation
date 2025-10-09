@@ -440,6 +440,19 @@ main.container input[type="file"]:hover {
   }
 }
 
+/* Responsive users table (stacked cards on small screens) */
+.users-table { width:100%; border-collapse:collapse; }
+.users-table th, .users-table td { padding:0.6rem 0.8rem; border-bottom:1px solid rgba(15,23,42,0.06); }
+@media (max-width:768px) {
+  .users-table thead { display:none; }
+  .users-table tr { display:block; margin-bottom:12px; background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.04); padding:10px; }
+  .users-table td { display:block; width:100%; padding:6px 8px; border:0; }
+  .users-table td::before { content: attr(data-label); font-weight:700; display:inline-block; width:110px; color:#374151; }
+  .users-table td.form-actions { display:flex; gap:8px; flex-direction:column; align-items:flex-start; }
+  .users-table td.form-actions form, .users-table td.form-actions button, .users-table td.form-actions select, .users-table td.form-actions input[type="password"] { width:100%; }
+  .users-table td.form-actions button { justify-content:center; }
+}
+
 @media (max-width: 768px) {
   main.container {
     padding: 1.5rem;
@@ -463,10 +476,17 @@ main.container input[type="file"]:hover {
     padding: 0.75rem 0.8rem;
   }
   
-  /* Rendre la table scrollable horizontalement */
+  /* On force l'empilement des tables sur petits écrans (pas de scroll horizontal) */
   main.container section:has(table) {
-    overflow-x: auto;
+    overflow: visible;
   }
+
+  /* Make any table stack into readable cards on small screens */
+  main.container table thead { display:none; }
+  main.container table, main.container table tbody, main.container table tr, main.container table td { display:block; width:100%; }
+  main.container table tr { margin-bottom:12px; background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.04); padding:10px; }
+  main.container table td { padding:6px 8px; border:0; }
+  main.container table td::before { content: attr(data-label); font-weight:700; display:inline-block; width:120px; color:#374151; }
 }
 
 @media (max-width: 480px) {
@@ -640,7 +660,7 @@ main.container button:not(:hover)::after {
             }
           ?>
           <tr>
-            <td style="white-space:nowrap;">
+            <td data-label="Actions" style="white-space:nowrap;">
               <a href="edit_publication.php?id=<?= (int)$p['id'] ?>" style="margin-right:6px;display:inline-block;padding:.35rem .5rem;background:#f3f4f6;border-radius:6px;text-decoration:none;color:#0f172a;border:1px solid #e5e7eb;">Modifier</a>
               <form method="post" action="delete_publication.php" style="display:inline;" onsubmit="return confirm('Supprimer cette publication ?');">
                 <input type="hidden" name="csrf" value="<?=htmlspecialchars($csrf)?>">
@@ -648,11 +668,11 @@ main.container button:not(:hover)::after {
                 <button type="submit" style="padding:.35rem .5rem;background:#fee2e2;color:#7f1d1d;border-radius:6px;border:1px solid #fecaca;">Supprimer</button>
               </form>
             </td>
-            <td><?=htmlspecialchars($p['title'])?></td>
-            <td><?=htmlspecialchars($p['domain'] ?? '')?></td>
-            <td><?=htmlspecialchars($p['created_at'])?></td>
-            <td><?= $thumbHtml ?></td>
-            <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?=htmlspecialchars($p['excerpt'] ?: (strlen($p['content'])>200?substr($p['content'],0,197).'...':$p['content']))?></td>
+            <td data-label="Titre"><?=htmlspecialchars($p['title'])?></td>
+            <td data-label="Domaine"><?=htmlspecialchars($p['domain'] ?? '')?></td>
+            <td data-label="Date"><?=htmlspecialchars($p['created_at'])?></td>
+            <td data-label="Images"><?= $thumbHtml ?></td>
+            <td data-label="Contenu" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?=htmlspecialchars($p['excerpt'] ?: (strlen($p['content'])>200?substr($p['content'],0,197).'...':$p['content']))?></td>
           </tr>
         <?php endforeach; ?>
         </tbody>
@@ -669,11 +689,11 @@ main.container button:not(:hover)::after {
       <tbody>
       <?php foreach($users as $u): ?>
         <tr>
-          <td><?=$u['id']?></td>
-          <td><?=htmlspecialchars($u['first_name'].' '.$u['last_name'])?></td>
-          <td><?=htmlspecialchars($u['email'])?></td>
-          <td><?=htmlspecialchars($role_map[$u['role_id']] ?? $u['role_id'])?></td>
-          <td>
+          <td data-label="Id"><?=$u['id']?></td>
+          <td data-label="Nom"><?=htmlspecialchars($u['first_name'].' '.$u['last_name'])?></td>
+          <td data-label="Email"><?=htmlspecialchars($u['email'])?></td>
+          <td data-label="Role"><?=htmlspecialchars($role_map[$u['role_id']] ?? $u['role_id'])?></td>
+          <td data-label="Actions" class="form-actions">
             <form method="post" action="change_role.php" style="display:inline">
               <input type="hidden" name="csrf" value="<?=htmlspecialchars($csrf)?>">
               <input type="hidden" name="user_id" value="<?=$u['id']?>">
