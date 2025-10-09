@@ -77,15 +77,29 @@ function e($value): string {
 }
 
 /* Safe upload */
-function safe_upload($file, $targetDir = __DIR__ . '/../public/uploads/', $allowed = ['image/jpeg','image/png','image/webp','application/pdf']): array {
+function safe_upload($file, $targetDir = __DIR__ . '/../public/uploads/', $allowed = null): array {
+    // allowed can be overridden; default list expanded to common image/video types
+    if ($allowed === null) {
+        $allowed = [
+            'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+            'application/pdf', 'video/mp4'
+        ];
+    }
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
         return ['error'=>'Upload failed'];
     }
-    if (!in_array(mime_content_type($file['tmp_name']), $allowed)) {
+    $mime = @mime_content_type($file['tmp_name']);
+    if ($mime === false) $mime = '';
+    if (!in_array($mime, $allowed)) {
         return ['error'=>'Type de fichier non autorisé'];
     }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return ['error'=>'Fichier trop volumineux (max 5MB)'];
+    // increase limit for video files
+    $maxBytes = 5 * 1024 * 1024;
+    if (strpos($mime, 'video/') === 0) {
+        $maxBytes = 50 * 1024 * 1024; // 50MB for videos
+    }
+    if ($file['size'] > $maxBytes) {
+        return ['error'=>'Fichier trop volumineux (max ' . round($maxBytes/1024/1024) . 'MB)'];
     }
     if (!is_dir($targetDir)) mkdir($targetDir,0755,true);
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
