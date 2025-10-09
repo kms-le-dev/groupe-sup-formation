@@ -599,7 +599,7 @@ main.container button:not(:hover)::after {
     </form>
   </section>
 
-  <?php include __DIR__ . '/inscriptions.php'; ?>
+
   <section>
     <h2>Publications</h2>
     <?php if ($pubs): ?>
@@ -694,5 +694,7 @@ main.container button:not(:hover)::after {
       </tbody>
     </table>
   </section>
+  <?php include __DIR__ . '/inscriptions.php'; ?>
+  <?php include __DIR__ . '/placements.php'; ?>
 </main>
 </body></html>

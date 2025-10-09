@@ -13,6 +13,30 @@ function verify_csrf_token($token): bool {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], (string)$token);
 }
 
+/**
+ * Vérifie le token CSRF envoyé via POST et arrête l'exécution si invalide.
+ * Usage: verify_csrf_token_or_die();
+ */
+function verify_csrf_token_or_die(): void {
+    $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (!$token || !verify_csrf_token($token)) {
+        http_response_code(403);
+        echo "CSRF token invalide";
+        exit;
+    }
+}
+
+/**
+ * Vérifie le token CSRF et redirige vers une page de login si invalide (optionnel).
+ */
+function verify_csrf_token_or_redirect(string $redirect = '/'): void {
+    $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (!$token || !verify_csrf_token($token)) {
+        header('Location: ' . $redirect);
+        exit;
+    }
+}
+
 /* Auth helpers */
 function current_user(): ?array {
     global $pdo;

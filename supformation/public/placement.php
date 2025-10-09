@@ -118,7 +118,7 @@ if (empty($publications)) {
         <li>💼 <strong>Placement en entreprise</strong> – Accès direct à des postes qualifiés</li>
         <li>📈 <strong>Suivi de carrière</strong> – Coaching et accompagnement après le placement</li>
       </ul>
-      <a href="#" class="btn-placement">Je veux être accompagné</a>
+      <a href="" class="btn-placement">Je veux être accompagné</a>
     </div>
   </div>
 </section>
@@ -170,5 +170,89 @@ if (empty($publications)) {
 <div class="inscription">
     <a href="paydunya_checkout.php?domaine=placement" class="btn">S'inscrire & Payer</a>
 </div>
+
+<!-- Choix modal: Entreprise vs Chercheur d'emploi -->
+<style>
+  /* Modal overlay and centered box */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    padding: 1rem;
+  }
+  .modal[aria-hidden="false"] { display:flex; }
+  .modal-inner {
+    background: #fff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  body.modal-open { overflow: hidden; }
+</style>
+
+<div id="placementChoice" class="modal" aria-hidden="true">
+  <div class="modal-inner" role="dialog" aria-modal="true">
+    <h2>Êtes-vous</h2>
+    <p>Choisissez le type de formulaire :</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button id="asCompany" class="btn">Entreprise à la recherche de personnel</button>
+      <button id="asJobseeker" class="btn">En quête d'emploi</button>
+    </div>
+    <div style="text-align:center;margin-top:0.75rem;"><button id="closeChoice" class="btn small">Annuler</button></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.querySelector('.btn-placement');
+  var modal = document.getElementById('placementChoice');
+  var asCompany = document.getElementById('asCompany');
+  var asJob = document.getElementById('asJobseeker');
+  var closeBtn = document.getElementById('closeChoice');
+  if (!btn || !modal) return;
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    modal.style.display='flex';
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('modal-open');
+    // focus first action for accessibility
+    setTimeout(function(){ asCompany.focus && asCompany.focus(); }, 40);
+  });
+  closeBtn.addEventListener('click', function(){
+    modal.style.display='none';
+    modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('modal-open');
+  });
+  asCompany.addEventListener('click', function(){ window.location = 'form_placement1.php'; });
+  asJob.addEventListener('click', function(){ window.location = 'form_placement2.php'; });
+
+  // close on backdrop click
+  modal.addEventListener('click', function(e){
+    if (e.target === modal) {
+      modal.style.display='none';
+      modal.setAttribute('aria-hidden','true');
+      document.body.classList.remove('modal-open');
+    }
+  });
+
+  // close on Escape
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      if (modal.getAttribute('aria-hidden') === 'false') {
+        modal.style.display='none';
+        modal.setAttribute('aria-hidden','true');
+        document.body.classList.remove('modal-open');
+      }
+    }
+  });
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
