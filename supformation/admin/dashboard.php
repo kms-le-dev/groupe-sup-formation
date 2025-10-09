@@ -598,9 +598,17 @@ main.container button:not(:hover)::after {
       <button>Publier</button>
     </form>
   </section>
+  <!-- Tabs header: publications / utilisateurs / inscriptions / placement -->
+  <nav class="admin-tabs" style="margin:1rem 0 1.5rem;">
+    <div class="tabs-container" style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button class="tab-btn active" data-target="tab-publications">Publications</button>
+      <button class="tab-btn" data-target="tab-users">Utilisateurs</button>
+      <button class="tab-btn" data-target="tab-inscriptions">Inscriptions</button>
+      <button class="tab-btn" data-target="tab-placements">Placement de personnel</button>
+    </div>
+  </nav>
 
-
-  <section>
+  <section id="tab-publications" class="tab-panel">
     <h2>Publications</h2>
     <?php if ($pubs): ?>
       <table>
@@ -654,7 +662,7 @@ main.container button:not(:hover)::after {
     <?php endif; ?>
   </section>
 
-  <section>
+  <section id="tab-users" class="tab-panel" style="display:none;">
     <h2>Utilisateurs</h2>
     <table>
       <thead><tr><th>Id</th><th>Nom</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
@@ -694,7 +702,40 @@ main.container button:not(:hover)::after {
       </tbody>
     </table>
   </section>
-  <?php include __DIR__ . '/inscriptions.php'; ?>
-  <?php include __DIR__ . '/placements.php'; ?>
+
+  <div id="tab-inscriptions" class="tab-panel" style="display:none;">
+    <?php include __DIR__ . '/inscriptions.php'; ?>
+  </div>
+
+  <div id="tab-placements" class="tab-panel" style="display:none;">
+    <?php include __DIR__ . '/placements.php'; ?>
+  </div>
+
+  <script>
+    (function(){
+      function showPanel(id){
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.style.display = (p.id === id) ? '' : 'none'; });
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.target === id); });
+      }
+      document.addEventListener('click', function(e){
+        var btn = e.target.closest('.tab-btn');
+        if (!btn) return;
+        var target = btn.dataset.target;
+        if (target) {
+          showPanel(target);
+          // optional: save selection
+          try { localStorage.setItem('admin_active_tab', target); } catch (e){}
+        }
+      });
+      // on load restore last tab or default to publications
+      var last = null;
+      try { last = localStorage.getItem('admin_active_tab'); } catch (e){}
+      if (last && document.getElementById(last)) {
+        showPanel(last);
+      } else {
+        showPanel('tab-publications');
+      }
+    })();
+  </script>
 </main>
 </body></html>
