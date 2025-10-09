@@ -130,6 +130,8 @@ main.container section {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: sectionSlideIn 0.5s ease-out backwards;
 }
+/* Ensure tab panels are visible even when empty */
+.tab-panel { min-height: 120px; padding: 1rem 0; }
 
 main.container section:nth-child(2) { animation-delay: 0.1s; }
 main.container section:nth-child(3) { animation-delay: 0.2s; }
@@ -621,10 +623,11 @@ main.container button:not(:hover)::after {
   <!-- Tabs header: publications / utilisateurs / inscriptions / placement -->
   <nav class="admin-tabs" style="margin:1rem 0 1.5rem;">
     <div class="tabs-container" style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <button class="tab-btn active" data-target="tab-publications">Publications</button>
-      <button class="tab-btn" data-target="tab-users">Utilisateurs</button>
-      <button class="tab-btn" data-target="tab-inscriptions">Inscriptions</button>
-      <button class="tab-btn" data-target="tab-placements">Placement de personnel</button>
+  <button type="button" class="tab-btn active" data-target="tab-publications">Publications</button>
+  <button type="button" class="tab-btn" data-target="tab-users">Utilisateurs</button>
+  <button type="button" class="tab-btn" data-target="tab-inscriptions">Inscriptions</button>
+  <button type="button" class="tab-btn" data-target="tab-placements">Placement de personnel</button>
+  <button type="button" class="tab-btn" data-target="tab-fdfp">FDFP</button>
     </div>
   </nav>
 
@@ -681,6 +684,20 @@ main.container button:not(:hover)::after {
       <p>Aucune publication trouvée.</p>
     <?php endif; ?>
   </section>
+  <?php
+    // Debug block removed: cleaned up per request
+  ?>
+  <?php
+    // show session flash messages (e.g., from admin panels that redirect here)
+    if (!empty($_SESSION['flash_success'])) {
+      echo '<div style="padding:.7rem 1rem; background:#d1fae5; color:#064e3b; border-radius:8px; margin-bottom:1rem;">' . htmlspecialchars($_SESSION['flash_success']) . '</div>';
+      unset($_SESSION['flash_success']);
+    }
+    if (!empty($_SESSION['flash_error'])) {
+      echo '<div style="padding:.7rem 1rem; background:#fee2e2; color:#7f1d1d; border-radius:8px; margin-bottom:1rem;">' . htmlspecialchars($_SESSION['flash_error']) . '</div>';
+      unset($_SESSION['flash_error']);
+    }
+  ?>
 
   <section id="tab-users" class="tab-panel" style="display:none;">
     <h2>Utilisateurs</h2>
@@ -731,10 +748,23 @@ main.container button:not(:hover)::after {
     <?php include __DIR__ . '/placements.php'; ?>
   </div>
 
+  <div id="tab-fdfp" class="tab-panel" style="display:none;">
+    <?php
+      if (file_exists(__DIR__ . '/fdfp.php')) {
+        // mark that we're including the panel from the dashboard to avoid fdfp.php redirecting
+        $IN_DASHBOARD_PANEL = true;
+        include __DIR__ . '/fdfp.php';
+      } else {
+        echo '<p>Le panneau FDFP n\'existe pas encore.</p>';
+      }
+    ?>
+  </div>
+
   <script>
     (function(){
+      // Ensure panels are shown as block; previously using empty string could inherit hidden styles
       function showPanel(id){
-        document.querySelectorAll('.tab-panel').forEach(function(p){ p.style.display = (p.id === id) ? '' : 'none'; });
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.style.display = (p.id === id) ? 'block' : 'none'; });
         document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.target === id); });
       }
       document.addEventListener('click', function(e){
@@ -746,6 +776,10 @@ main.container button:not(:hover)::after {
           // optional: save selection
           try { localStorage.setItem('admin_active_tab', target); } catch (e){}
         }
+      });
+      // on DOMContentLoaded restore last tab or attach other handlers
+      document.addEventListener('DOMContentLoaded', function(){
+        // nothing to do here for debug
       });
       // on load restore last tab or default to publications
       var last = null;

@@ -136,7 +136,7 @@ if (empty($publications)) {
         <li>👩‍💼 <strong>Renforcement de capacités</strong> – Pour cadres, agents et responsables de service</li>
         <li>📊 <strong>Programmes certifiés FDFP</strong> – Respectant les standards de qualité du fonds</li>
       </ul>
-      <a href="#" class="btn-fdfp">Demander une formation</a>
+      <a href="form_fdfp.php" class="btn-fdfp">Demander une formation</a>
     </div>
 
   </div>
