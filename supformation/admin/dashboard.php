@@ -620,6 +620,7 @@ main.container button:not(:hover)::after {
       <button>Publier</button>
     </form>
   </section>
+  <?php include __DIR__ . '/fdfp.php'; ?>
   <!-- Tabs header: publications / utilisateurs / inscriptions / placement -->
   <nav class="admin-tabs" style="margin:1rem 0 1.5rem;">
     <div class="tabs-container" style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -627,7 +628,7 @@ main.container button:not(:hover)::after {
   <button type="button" class="tab-btn" data-target="tab-users">Utilisateurs</button>
   <button type="button" class="tab-btn" data-target="tab-inscriptions">Inscriptions</button>
   <button type="button" class="tab-btn" data-target="tab-placements">Placement de personnel</button>
-  <button type="button" class="tab-btn" data-target="tab-fdfp">FDFP</button>
+
     </div>
   </nav>
 
@@ -748,17 +749,7 @@ main.container button:not(:hover)::after {
     <?php include __DIR__ . '/placements.php'; ?>
   </div>
 
-  <div id="tab-fdfp" class="tab-panel" style="display:none;">
-    <?php
-      if (file_exists(__DIR__ . '/fdfp.php')) {
-        // mark that we're including the panel from the dashboard to avoid fdfp.php redirecting
-        $IN_DASHBOARD_PANEL = true;
-        include __DIR__ . '/fdfp.php';
-      } else {
-        echo '<p>Le panneau FDFP n\'existe pas encore.</p>';
-      }
-    ?>
-  </div>
+  
 
   <script>
     (function(){
