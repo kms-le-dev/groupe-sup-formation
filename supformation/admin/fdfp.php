@@ -20,27 +20,38 @@ if (empty($csrf)) {
 echo "<!-- DEBUG: admin/fdfp.php included; IN_DASHBOARD_PANEL=" . ((empty($IN_DASHBOARD_PANEL)) ? '0' : '1') . " -->\n";
 
 // handle deletion
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && !headers_sent()) {
   $id = (int)$_POST['delete_id'];
   $token = $_POST['csrf_token'] ?? null;
-  if (!verify_csrf_token($token)) { $_SESSION['flash_error'] = 'Token CSRF invalide.'; header('Location: dashboard.php'); exit; }
-  $stmt = $pdo->prepare('SELECT filename FROM fdfp_submissions WHERE id = ?');
-  $stmt->execute([$id]);
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if ($row) {
-    // resolve possible file locations
-    $publicRoot = __DIR__ . '/../public/';
-    $candidates = [
-      $publicRoot . $row['filename'],
-      $publicRoot . 'uploads/' . ltrim($row['filename'], '/'),
-      $publicRoot . 'uploads/fdfp/' . basename($row['filename']),
-      $publicRoot . 'uploads/' . basename($row['filename']),
-    ];
-    foreach ($candidates as $c) { if (file_exists($c)) { @unlink($c); break; } }
-    $pdo->prepare('DELETE FROM fdfp_submissions WHERE id = ?')->execute([$id]);
-    $_SESSION['flash_success'] = 'Soumission supprimée.';
+  if (!verify_csrf_token($token)) { 
+    $_SESSION['flash_error'] = 'Token CSRF invalide.'; 
+    if (empty($IN_DASHBOARD_PANEL)) {
+      header('Location: dashboard.php'); 
+      exit;
+    }
+  } else {
+    $stmt = $pdo->prepare('SELECT filename FROM fdfp_submissions WHERE id = ?');
+    $stmt->execute([$id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) {
+      // resolve possible file locations
+      $publicRoot = __DIR__ . '/../public/';
+      $candidates = [
+        $publicRoot . $row['filename'],
+        $publicRoot . 'uploads/' . ltrim($row['filename'], '/'),
+        $publicRoot . 'uploads/fdfp/' . basename($row['filename']),
+        $publicRoot . 'uploads/' . basename($row['filename']),
+      ];
+      foreach ($candidates as $c) { if (file_exists($c)) { @unlink($c); break; } }
+      $pdo->prepare('DELETE FROM fdfp_submissions WHERE id = ?')->execute([$id]);
+      $_SESSION['flash_success'] = 'Soumission supprimée.';
+      
+      if (empty($IN_DASHBOARD_PANEL) && !headers_sent()) { 
+        header('Location: dashboard.php'); 
+        exit;
+      }
+    }
   }
-  if (empty($IN_DASHBOARD_PANEL)) { header('Location: dashboard.php'); exit; }
 }
 
 // Fetch submissions with error reporting for easier debugging

@@ -181,7 +181,7 @@ function loadJsPDF(timeout = 5000) {
         }
         // prepare WhatsApp message and redirect the user to WhatsApp (wa.me)
         try {
-          const phone = '2250505051570'; // destination sans '+'
+          const phone = '2250706591243'; // destination sans '+'
           const preferred = ['company','domain','address','contact','email','type','employees','nif','rccm'];
           const metaObj = typeof meta === 'object' ? meta : JSON.parse(meta || '{}');
           const parts = [];

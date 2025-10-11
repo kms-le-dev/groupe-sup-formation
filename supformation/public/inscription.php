@@ -178,21 +178,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       m1: {oui:150000, non:150000},
       m2: {oui:150000, non:150000}
     };
-    const sel = document.getElementById('cycleSelect');
-    const montantVal = document.getElementById('montantVal');
-    const calcBtn = document.getElementById('calcBtn');
-
-    function compute(){
-      const cycle = sel.value;
-      const aff = document.querySelector('input[name="affecte"]:checked').value === '1' ? 'oui' : 'non';
-      const val = montants[cycle] ? montants[cycle][aff] : 0;
-      montantVal.textContent = val.toLocaleString('fr-FR');
+    
+    function updateMontant() {
+      const cycle = document.getElementById('cycleSelect').value;
+      const affecte = document.querySelector('input[name="affecte"]:checked').value === '1' ? 'oui' : 'non';
+      const montant = montants[cycle] ? montants[cycle][affecte] : 0;
+      document.getElementById('montantVal').textContent = montant.toLocaleString('fr-FR');
     }
-    calcBtn.addEventListener('click', compute);
-    sel.addEventListener('change', compute);
-    document.querySelectorAll('input[name="affecte"]').forEach(i=>i.addEventListener('change', compute));
-    // compute initial
-    compute();
+
+    // Ajouter les écouteurs d'événements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Écouteur pour le changement de cycle
+      document.getElementById('cycleSelect').addEventListener('change', updateMontant);
+      
+      // Écouteurs pour les boutons radio
+      document.querySelectorAll('input[name="affecte"]').forEach(input => {
+        input.addEventListener('change', updateMontant);
+      });
+
+      // Calculer le montant initial
+      updateMontant();
+    });
   </script>
 </body>
 </html>

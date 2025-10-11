@@ -753,25 +753,82 @@ main.container button:not(:hover)::after {
 
   <script>
     (function(){
-      // Ensure panels are shown as block; previously using empty string could inherit hidden styles
+      // Notification system
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 25px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 1000;
+          animation: slideIn 0.3s ease forwards;
+          color: #fff;
+          max-width: 400px;
+        `;
+        
+        if (type === 'success') {
+          notification.style.background = '#16a34a';
+        } else if (type === 'error') {
+          notification.style.background = '#dc2626';
+        }
+
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.animation = 'slideOut 0.3s ease forwards';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Handle flash messages from PHP session
+      if (window.flashMessage) {
+        showNotification(window.flashMessage.message, window.flashMessage.type);
+      }
+
+      // Tab management
       function showPanel(id){
         document.querySelectorAll('.tab-panel').forEach(function(p){ p.style.display = (p.id === id) ? 'block' : 'none'; });
         document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.target === id); });
       }
+
       document.addEventListener('click', function(e){
         var btn = e.target.closest('.tab-btn');
         if (!btn) return;
         var target = btn.dataset.target;
         if (target) {
           showPanel(target);
-          // optional: save selection
           try { localStorage.setItem('admin_active_tab', target); } catch (e){}
         }
+
+        // Handle delete actions
+        if (e.target.matches('.btn-delete')) {
+          e.preventDefault();
+          if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+            const form = e.target.closest('form');
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+              showNotification('Élément supprimé avec succès', 'success');
+              // Refresh the page after a short delay
+              setTimeout(() => window.location.reload(), 1000);
+            })
+            .catch(error => {
+              showNotification('Erreur lors de la suppression', 'error');
+            });
+          }
+        }
       });
-      // on DOMContentLoaded restore last tab or attach other handlers
-      document.addEventListener('DOMContentLoaded', function(){
-        // nothing to do here for debug
-      });
+
       // on load restore last tab or default to publications
       var last = null;
       try { last = localStorage.getItem('admin_active_tab'); } catch (e){}
@@ -780,6 +837,20 @@ main.container button:not(:hover)::after {
       } else {
         showPanel('tab-publications');
       }
+      
+      // Add keyframes for animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
     })();
   </script>
 </main>

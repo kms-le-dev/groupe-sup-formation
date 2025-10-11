@@ -76,7 +76,7 @@ try {
   $id = $pdo->lastInsertId();
 
   // Prepare WhatsApp link (client can open) - message includes a summary
-  $phone = '+2250505051570';
+  $phone = '+2250706591243';
   // Decode meta if it's JSON and normalize into an ordered array of fields
   $fields = [];
   if ($meta) {
