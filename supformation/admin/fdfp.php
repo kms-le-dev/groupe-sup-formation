@@ -303,19 +303,24 @@ try {
 
     .actions {
       flex-direction: column;
-      align-items: stretch;
+      align-items: center;
       gap: 0.5rem;
       margin-top: 1rem;
     }
 
-    .actions a,
-    .actions button {
-      width: 100%;
-      text-align: center;
-    }
+      .actions a,
+      .actions button {
+        width: 70%;
+        min-width: 120px;
+        max-width: 180px;
+        text-align: center;
+        display: block;
+      }
   }
 </style>
-
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 <div class="admin-content container">
   <?php if (!empty($IN_DASHBOARD_PANEL)): ?>
     <div class="panel-notice">📊 Panel FDFP inclus depuis le dashboard</div>
@@ -338,7 +343,6 @@ try {
   <?php if ($countRows === 0): ?>
     <div class="empty-state">
       <p><strong>Aucune demande trouvée.</strong></p>
-      <p style="margin-top: 0.5rem;">Si vous avez récemment soumis le formulaire, vérifiez que la requête a renvoyé <code>{"success":true}</code> et que le fichier a été créé dans <code>public/uploads/fdfp/</code>.</p>
     </div>
   <?php else: ?>
     <table class="responsive-table">
@@ -407,7 +411,7 @@ try {
             <td data-label="Créé"><?= e($r['created_at']) ?></td>
             <td data-label="Actions">
               <div class="actions">
-                <a class="btn small" href="<?= e($downloadHref) ?>" download target="_blank">⬇️ Télécharger</a>
+                <a class="btn small" href="<?= '../public/uploads/fdfp/' . e(basename($r['filename'])) ?>" target="_blank">⬇️ Télécharger</a>
                 <form method="post" action="fdfp.php" style="display:inline" onsubmit="return confirm('Supprimer cette soumission ?');">
                   <input type="hidden" name="delete_id" value="<?= e($r['id']) ?>">
                   <input type="hidden" name="csrf_token" value="<?= e(generate_csrf_token()) ?>">
