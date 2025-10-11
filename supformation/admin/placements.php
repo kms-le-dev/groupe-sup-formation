@@ -103,15 +103,15 @@ try {
   <?php else: ?>
     <div class="table-wrap">
     <table class="table responsive-table">
-      <thead><tr><th>ID</th><th>Type</th><th>Fichier</th><th>Meta</th><th>Créé</th><th>Actions</th></tr></thead>
+      <thead><tr><th>ID</th><th>Type</th><th>Fichier</th><th>CV</th><th>Lettre de motivation</th><th>Meta</th><th>Créé</th><th>Actions</th></tr></thead>
       <tbody>
         <?php foreach ($rows as $r): ?>
           <tr>
             <td data-label="ID"><?= e($r['id']) ?></td>
             <td data-label="Type"><?= e($r['type']) ?></td>
             <?php
-              // resolve URL to public file (support different DB formats)
               $publicRoot = __DIR__ . '/../public/';
+              // Fichier principal (formulaire)
               $candidate1 = $publicRoot . $r['filename'];
               if (file_exists($candidate1)) {
                 $urlPath = ltrim($r['filename'], '/');
@@ -120,16 +120,41 @@ try {
               } elseif (file_exists($publicRoot . 'uploads/placements/' . basename($r['filename']))) {
                 $urlPath = 'uploads/placements/' . basename($r['filename']);
               } else {
-                // fallback to best-effort URL (may 404) so user can still try
                 $urlPath = ltrim($r['filename'], '/');
               }
+              // CV
+              $cvUrl = null;
+              if (!empty($r['cv_file'])) {
+                $cvUrl = $r['cv_file'];
+              }
+              // Lettre de motivation
+              $coverUrl = null;
+              if (!empty($r['cover_file'])) {
+                $coverUrl = $r['cover_file'];
+              }
             ?>
-            <td data-label="Fichier"><a href="../public/<?= e($urlPath) ?>" target="_blank"><?= e(basename($r['filename'])) ?></a></td>
+            <td data-label="Fichier"><a href="../public/<?= e($urlPath) ?>" target="_blank">Formulaire</a></td>
+            <td data-label="CV">
+              <?php if ($cvUrl): ?>
+                <a href="../public/<?= e($cvUrl) ?>" target="_blank">Télécharger CV</a>
+              <?php else: ?>
+                —
+              <?php endif; ?>
+            </td>
+            <td data-label="Lettre de motivation">
+              <?php if ($coverUrl): ?>
+                <a href="../public/<?= e($coverUrl) ?>" target="_blank">Télécharger Lettre</a>
+              <?php else: ?>
+                —
+              <?php endif; ?>
+            </td>
             <td data-label="Meta"><pre style="max-width:360px;white-space:pre-wrap;"><?= e($r['meta']) ?></pre></td>
             <td data-label="Créé"><?= e($r['created_at']) ?></td>
             <td data-label="Actions">
               <div class="responsive-actions">
-                <a class="btn small" href="../public/<?= e($urlPath) ?>" download>Télécharger</a>
+                <a class="btn small" href="../public/download_placement_file.php?id=<?= e($r['id']) ?>&type=form">Télécharger</a>
+                <?php if ($cvUrl): ?><a class="btn small" href="../public/download_placement_file.php?id=<?= e($r['id']) ?>&type=cv">Télécharger CV</a><?php endif; ?>
+                <?php if ($coverUrl): ?><a class="btn small" href="../public/download_placement_file.php?id=<?= e($r['id']) ?>&type=cover">Télécharger Lettre</a><?php endif; ?>
                 <form method="post" action="placements.php" style="display:inline" onsubmit="return confirm('Supprimer ?');">
                   <input type="hidden" name="delete_id" value="<?= e($r['id']) ?>">
                   <input type="hidden" name="csrf_token" value="<?= e(generate_csrf_token()) ?>">

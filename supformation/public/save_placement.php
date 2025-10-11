@@ -1,10 +1,37 @@
 <?php
+// Use an output buffer so any accidental output (whitespace, includes, debug echos)
+// won't corrupt the JSON response expected by the client.
+ob_start();
+
+// Do not display PHP errors in the response. Log them instead.
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 session_start();
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+// Remove any output that may have been produced by includes before sending JSON
+if (ob_get_length()) ob_clean();
+
 // endpoint to accept placement PDFs and metadata
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+
+// Helper to send JSON after clearing any accidental output
+function send_json($data, int $status = 200): void {
+  // clear any output produced so far
+  if (ob_get_length()) ob_clean();
+  http_response_code($status);
+  header('Content-Type: application/json; charset=utf-8');
+  // use UNESCAPED_UNICODE for readability, suppress errors if any
+  echo json_encode($data, JSON_UNESCAPED_UNICODE);
+  // flush and end
+  if (function_exists('fastcgi_finish_request')) {
+    @fastcgi_finish_request();
+  }
+  exit;
+}
 
 try {
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid method');
@@ -13,27 +40,31 @@ try {
   $uploadDir = __DIR__ . '/uploads/placements';
   if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
-  // create table if not exists
+  // create table if not exists (ajout cv_file et cover_file)
   $pdo->exec("CREATE TABLE IF NOT EXISTS placements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(40) NOT NULL,
     meta JSON NULL,
     filename VARCHAR(255) NOT NULL,
+    cv_file VARCHAR(255) NULL,
+    cover_file VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
   $type = $_POST['type'] ?? 'unknown';
   $meta = $_POST['meta'] ?? null;
-  // If no PDF uploaded (or upload failed), generate a simple PDF server-side as a fallback
+  // Gestion des fichiers PDF principaux et pièces jointes (CV et lettre de motivation)
   $target = null;
+  $cvPath = null;
+  $coverPath = null;
+
+  // Sauvegarde du PDF principal (formulaire)
   if (!isset($_FILES['pdf']) || empty($_FILES['pdf']['tmp_name'])) {
-    // create a simple one-page PDF from meta text
     $text = '';
     if ($meta) {
       $text = is_string($meta) ? $meta : json_encode($meta);
     }
     $text = trim($text) ?: ("Soumission type: " . $type);
-    // generate PDF content
     $pdfContent = generate_simple_pdf($text);
     $basename = 'placement_' . time() . '.pdf';
     $target = $uploadDir . '/' . $basename;
@@ -54,14 +85,11 @@ try {
       if ($head === "%PDF") $validPdf = true;
     }
     if (!$validPdf) {
-      // read uploaded content as text and generate a proper PDF instead
       $uploadedText = @file_get_contents($target);
       $pdfContent = generate_simple_pdf($uploadedText ?: ($meta ?: $type));
-      // overwrite target with generated PDF
       if (file_put_contents($target, $pdfContent) === false) {
         throw new Exception('Impossible d\'écrire le PDF de remplacement');
       }
-      // ensure filename ends with .pdf
       if (strtolower(pathinfo($target, PATHINFO_EXTENSION)) !== 'pdf') {
         $newTarget = preg_replace('/\.[^.]+$/', '', $target) . '.pdf';
         @rename($target, $newTarget);
@@ -70,9 +98,39 @@ try {
     }
   }
 
-  // save to DB
-  $stmt = $pdo->prepare('INSERT INTO placements (type, meta, filename) VALUES (?, ?, ?)');
-  $stmt->execute([$type, $meta, 'placements/' . basename($target)]);
+  // Sauvegarde du CV
+  if (isset($_FILES['cv']) && !empty($_FILES['cv']['tmp_name'])) {
+    $cvFile = $_FILES['cv'];
+    if ($cvFile['error'] === UPLOAD_ERR_OK) {
+      $cvExt = pathinfo($cvFile['name'], PATHINFO_EXTENSION);
+      $cvBase = 'cv_' . time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/','_', basename($cvFile['name']));
+      $cvPath = $uploadDir . '/' . $cvBase;
+      if (move_uploaded_file($cvFile['tmp_name'], $cvPath)) {
+        $cvPath = 'placements/' . basename($cvPath);
+      } else {
+        $cvPath = null;
+      }
+    }
+  }
+
+  // Sauvegarde de la lettre de motivation
+  if (isset($_FILES['cover']) && !empty($_FILES['cover']['tmp_name'])) {
+    $coverFile = $_FILES['cover'];
+    if ($coverFile['error'] === UPLOAD_ERR_OK) {
+      $coverExt = pathinfo($coverFile['name'], PATHINFO_EXTENSION);
+      $coverBase = 'cover_' . time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/','_', basename($coverFile['name']));
+      $coverPath = $uploadDir . '/' . $coverBase;
+      if (move_uploaded_file($coverFile['tmp_name'], $coverPath)) {
+        $coverPath = 'placements/' . basename($coverPath);
+      } else {
+        $coverPath = null;
+      }
+    }
+  }
+
+  // save to DB (ajout cv_file et cover_file)
+  $stmt = $pdo->prepare('INSERT INTO placements (type, meta, filename, cv_file, cover_file) VALUES (?, ?, ?, ?, ?)');
+  $stmt->execute([$type, $meta, 'placements/' . basename($target), $cvPath, $coverPath]);
   $id = $pdo->lastInsertId();
 
   // Prepare WhatsApp link (client can open) - message includes a summary
@@ -169,13 +227,24 @@ try {
   $waLink = "https://wa.me/{$phone}?text={$msg}";
 
   $resUrl = dirname($_SERVER['SCRIPT_NAME']) . '/uploads/placements/' . basename($target);
+  $cvUrl = $cvPath ? (dirname($_SERVER['SCRIPT_NAME']) . '/uploads/placements/' . basename($cvPath)) : null;
+  $coverUrl = $coverPath ? (dirname($_SERVER['SCRIPT_NAME']) . '/uploads/placements/' . basename($coverPath)) : null;
 
-  echo json_encode(['success'=>true, 'id'=>$id, 'url'=>$resUrl, 'filename'=>basename($target), 'whatsapp'=>$waLink]);
-  exit;
+  send_json([
+    'success'=>true,
+    'id'=>$id,
+    'url'=>$resUrl,
+    'filename'=>basename($target),
+    'cv_url'=>$cvUrl,
+    'cover_url'=>$coverUrl,
+    'whatsapp'=>$waLink
+  ], 200);
 } catch (Exception $e) {
-  http_response_code(400);
-  echo json_encode(['success'=>false, 'error'=>$e->getMessage()]);
-  exit;
+  send_json([
+    'success'=>false,
+    'error'=>$e->getMessage(),
+    'trace'=>$e->getTraceAsString()
+  ], 400);
 }
 
 /**
