@@ -2,6 +2,8 @@
 // includes/header.php
 $user = current_user();
 ?>
+
+
 <header class="site-header">
   <div class="container header-inner">
     <div class="brand">

@@ -22,7 +22,10 @@ require_once __DIR__ . '/../includes/functions.php';
     }
   </style>
 </head>
+
+
 <body>
+<?php include 'loader.php'; ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 <div class="container">
   <div class="fdfp-form">

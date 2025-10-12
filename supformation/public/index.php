@@ -168,6 +168,7 @@ $csrf = generate_csrf_token();
 
 
 <body>
+
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
 <main class="container">

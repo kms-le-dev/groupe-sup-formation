@@ -13,7 +13,10 @@ require_once __DIR__ . '/../includes/functions.php';
   <!-- Feuille de style dynamique: customise via query params: primary, mode, base_size, radius -->
   <link rel="stylesheet" href="assets/css/dynamic_style.php?primary=%2346b903&mode=light&base_size=16px&radius=8px">
 </head>
+
+
 <body>
+  <?php include 'loader.php'; ?>
   <main class="container">
     <h1>POUR LE PLACEMENT DE PERSONNEL - Formulaire de l'entreprise</h1>
     <form id="placementCompanyForm">

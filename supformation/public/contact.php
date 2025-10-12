@@ -63,7 +63,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <title>Groupe Sup'Formation</title>
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
+
 <body>
+
 <h1>Contact</h1>
 
 <?php if ($message): ?>

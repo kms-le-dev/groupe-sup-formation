@@ -329,9 +329,12 @@ try {
       }
   }
 </style>
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
+
 <div class="admin-content container">
   <?php if (!empty($IN_DASHBOARD_PANEL)): ?>
     <div class="panel-notice">📊 Panel FDFP inclus depuis le dashboard</div>

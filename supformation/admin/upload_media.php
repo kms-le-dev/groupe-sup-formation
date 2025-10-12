@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["media"])) {
   <link rel="stylesheet" href="../public/assets/css/styles.css">
 </head>
 <body>
+    
 <h2>Upload de média</h2>
 
 <?php if (!empty($message)): ?>

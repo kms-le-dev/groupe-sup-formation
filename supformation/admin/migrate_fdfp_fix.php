@@ -59,9 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 }
 
-?><!doctype html>
-<html><head><meta charset="utf-8"><title>Migrate FDFP filenames</title>
-<style>body{font-family:Arial,Helvetica,sans-serif;padding:20px;}</style></head><body>
+?>
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Migrate FDFP filenames</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;padding:20px;}
+</style>
+</head>
+<body>
 <h1>Migration – normaliser fdfp_submissions.filename</h1>
 <?php if (!empty($msg)): ?>
   <div style="padding:1rem;background:#eef6ff;border:1px solid #cfe3ff;border-radius:6px;margin-bottom:1rem;"><?php echo htmlspecialchars($msg); ?></div>

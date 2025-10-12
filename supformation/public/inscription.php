@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
+  <?php include 'loader.php'; ?>
   <div class="wrapper">
     <h1>Inscription - Téléversement fiche</h1>
     <?php if(!empty($errors)): ?>

@@ -72,7 +72,7 @@ if (empty($publications)) {
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
- 
+
 <h1>Placement de Personnel</h1>
 
 <!-- Carousel -->

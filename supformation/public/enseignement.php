@@ -70,7 +70,7 @@ if (empty($publications)) {
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
- 
+
 <h1>Enseignement Supérieur</h1>
 
 <!-- Carousel -->

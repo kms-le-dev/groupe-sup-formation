@@ -190,7 +190,7 @@ label input[type="number"]{
 </style>
 
 <body>
-    
+  <?php include 'loader.php'; ?>  
   <main class="container">
     <h1>FICHE D’INSCRIPTION — INFORMATIONS PERSONNELLES ET ACADÉMIQUES</h1>
 
