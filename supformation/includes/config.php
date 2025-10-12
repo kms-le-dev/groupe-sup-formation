@@ -13,8 +13,8 @@ define('DB_USER','root');
 define('DB_PASS',''); // mets un mot de passe fort
 
 // Site
-define('BASE_URL','http://localhost/supformation/public'); // adapte
-define('ASSETS','../public/assets');
+define('BASE_URL','http://localhost/groupe-sup-formation/supformation/public'); // adapte
+define('ASSETS','/groupe-sup-formation/supformation/public/assets');
 
 
 // SMTP placeholders - REMPLACE CES VALEURS AVANT MISE EN PRODUCTION
@@ -31,19 +31,22 @@ define('SMTP_DEBUG', 2);
 
 
 
-// URL de checkout PayDunya (à remplacer par ton checkout réel)
-define('PAYDUNYA_CHECKOUT_URL', 'https://paydunya.com/pay/TON_CHECKOUT_ID');
+// === PAYDUNYA CONFIGURATION ===
+// Mode test
+define('PAYDUNYA_MODE', 'test');
 
-// WhatsApp Cloud API placeholders (si tu veux envoyer les PDFs directement sur WhatsApp)
-// Tu dois créer une application Meta/WhatsApp Cloud et récupérer un token et un phone_number_id
-define('WHATSAPP_TOKEN', ''); // ex: 'EAA...'
-define('WHATSAPP_PHONE_NUMBER_ID', ''); // ex: '10987654321'
-// Numéro destinataire admin en E.164 (ex: +2250505051570)
-define('WHATSAPP_ADMIN_NUMBER', '+2250505051570');
+// Clés de test
+define('PAYDUNYA_MASTER_KEY', '3AAiZOuK-pY6y-tubH-hReu-SM9fSoihea1C');
+define('PAYDUNYA_PUBLIC_KEY', 'test_public_glOr2qq8UzQm6hm0ZDv1AklrIi5');
+define('PAYDUNYA_PRIVATE_KEY', 'test_private_RWeCW1OmiF32drWquMlMAJ0O3LU');
+define('PAYDUNYA_TOKEN', 'KQ67pbN9R29ewZkvlXqP');
 
-// Stripe (exemple)
-define('STRIPE_SECRET_KEY','sk_test_xxx');
-define('STRIPE_PUBLISHABLE_KEY','pk_test_xxx');
+// Callback et success URLs
+define('PAYDUNYA_CALLBACK_URL', BASE_URL . '/paydunya_callback.php');
+define('PAYDUNYA_SUCCESS_URL', BASE_URL . '/paydunya_success.php');
+define('PAYDUNYA_CANCEL_URL', BASE_URL . '/inscription.php'); 
+
+
 
 
 // PDO connexion

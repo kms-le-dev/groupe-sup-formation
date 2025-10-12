@@ -1,81 +1,70 @@
 <?php
-session_start();
 require_once __DIR__ . '/../includes/config.php';
-require_once __DIR__ . '/../includes/functions.php';
 
-// Vérifier qu'un domaine a été fourni
-$domaine = $_GET['domaine'] ?? '';
-if (!in_array($domaine, ['enseignement','placement','fdfp'])) {
-    die("Domaine invalide");
+// Vérifier les données minimales
+if (!isset($_GET['montant']) || !is_numeric($_GET['montant'])) {
+    http_response_code(400);
+    exit('Montant invalide.');
 }
 
-// ID de l'utilisateur connecté
-if (!isset($_SESSION['user_id'])) {
-    die("Vous devez être connecté pour vous inscrire à cette formation.");
-}
+$montant = (int) $_GET['montant'];
+$description = 'Frais d\'inscription SUP\'FORMATION';
+$nomClient = 'Étudiant(e)';
 
-$user_id = $_SESSION['user_id'];
-
-// Clés PayDunya (sandbox)
-$api_key = 'YOUR_PAYDUNYA_API_KEY';
-$secret_key = 'YOUR_PAYDUNYA_SECRET_KEY';
-$mode = 'sandbox'; // ou 'live'
-
-// Montant et description
-$montant = 50000; // Exemple montant CFA
-$description = "Inscription au domaine: $domaine";
-
-// URL callback et return
-$callback_url = "http://localhost/supformation/public/paydunya_callback.php";
-$return_url = "http://localhost/supformation/public/paydunya_success.php";
-
-// Création de la session de paiement via API PayDunya
-$data = [
-    "store_name" => "SupFormation",
-    "total_amount" => $montant,
-    "currency" => "XOF",
-    "cancel_url" => $return_url,
-    "return_url" => $return_url,
-    "callback_url" => $callback_url,
-    "items" => [
-        [
-            "name" => $domaine,
-            "quantity" => 1,
-            "price" => $montant
-        ]
+// Créer une session PayDunya Checkout
+$payload = [
+    "invoice" => [
+        "items" => [
+            [
+                "name" => $description,
+                "quantity" => 1,
+                "unit_price" => $montant,
+                "total_price" => $montant
+            ]
+        ],
+        "total_amount" => $montant,
+        "description" => $description
+    ],
+    "store" => [
+        "name" => "GROUPE SUP'FORMATION",
+        "tagline" => "Paiement en ligne des frais d'inscription",
+        "postal_address" => "Côte d'Ivoire",
+        "phone" => "+2250505051570",
+        "website_url" => "http://www.groupesupformation.com",
+        "logo_url" => "https://www.groupesupformation.com/logo.png"
+    ],
+    "actions" => [
+        "cancel_url" => PAYDUNYA_CANCEL_URL,
+        "return_url" => PAYDUNYA_SUCCESS_URL,
+        "callback_url" => PAYDUNYA_CALLBACK_URL
     ],
     "custom_data" => [
-        "user_id" => $user_id,
-        "domaine" => $domaine
+        "etudiant" => $nomClient
     ]
 ];
 
-// Convertir en JSON
-$json_data = json_encode($data);
-
-// Initialiser cURL
-$ch = curl_init("https://app.paydunya.com/checkout-invoice/create");
+// Envoyer la requête à PayDunya
+$ch = curl_init("https://app.paydunya.com/sandbox-api/v1/checkout-invoice/create");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "Content-Type: application/json",
-    "Authorization: Bearer $api_key"
+    "PAYDUNYA-MASTER-KEY: " . PAYDUNYA_MASTER_KEY,
+    "PAYDUNYA-PRIVATE-KEY: " . PAYDUNYA_PRIVATE_KEY,
+    "PAYDUNYA-TOKEN: " . PAYDUNYA_TOKEN
 ]);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 
 $response = curl_exec($ch);
 curl_close($ch);
 
-$result = json_decode($response, true);
+$data = json_decode($response, true);
 
-if (isset($result['response_text']) && $result['response_text'] === "Invoice created") {
-    // Redirection vers la page de paiement PayDunya
-    $invoice_url = $result['checkout_url'];
-    header("Location: $invoice_url");
+if (isset($data['response_code']) && $data['response_code'] === "00") {
+    // Rediriger l'utilisateur vers la page de paiement
+    header("Location: " . $data['response_text']);
     exit;
 } else {
-    echo "<h2>Erreur lors de la création du paiement :</h2>";
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
+    echo "<h3>Erreur PayDunya :</h3>";
+    echo "<pre>" . htmlspecialchars($response) . "</pre>";
 }

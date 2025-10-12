@@ -60,27 +60,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             if ($ok) {
-                // Redirect to PayDunya
-                $paydunya = '';
-                if (defined('PAYDUNYA_CHECKOUT_URL')) {
-                    $paydunya = constant('PAYDUNYA_CHECKOUT_URL');
-                } elseif (isset($paydunya_checkout_url) && $paydunya_checkout_url) {
-                    $paydunya = $paydunya_checkout_url;
-                }
-                if ($paydunya) {
-                    header('Location: ' . $paydunya);
-                    exit;
-                } else {
-                    $success = 'Inscription enregistrée. URL PayDunya non configurée.';
-                }
-            } else {
-                $errors[] = 'Erreur lors de l\'enregistrement en base.';
-            }
+          // Redirection vers PayDunya avec le montant réel
+          header('Location: paydunya_checkout.php?montant=' . $montant);
+          exit;
         }
     }
 }
+}
 
 ?>
+
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -201,4 +191,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
   </script>
 </body>
-</html>
+</html> 
