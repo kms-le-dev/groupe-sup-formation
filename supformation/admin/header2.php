@@ -247,3 +247,97 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 })();
 </script>
+
+<!-- Top bar for small screens (admin header) -->
+<div class="top-bar" aria-hidden="true">
+  <nav class="top-nav">
+    <a href="../public/index.php" data-icon="🏠">Accueil</a>
+    <a href="../public/contact.php" data-icon="✉️">Contact</a>
+    <?php if ($user): ?>
+      <a href="#" data-icon="👋" class="top-greet" onclick="event.preventDefault();">Salut, <?=htmlspecialchars($user['first_name'])?></a>
+      <a href="../public/logout.php" data-icon="🔑">Déconnexion</a>
+    <?php else: ?>
+      <a href="../public/login.php" data-icon="🔑">Connexion</a>
+      <a href="../public/register.php" data-icon="📝">Inscription</a>
+    <?php endif; ?>
+  </nav>
+</div>
+
+<!-- Bottom bar fixed on small screens (admin header) -->
+<div class="bottom-bar" aria-hidden="true">
+  <nav class="bottom-nav">
+    <a href="../public/enseignement.php" data-icon="🎓">Enseignement Supérieur</a>
+    <a href="../public/placement.php" data-icon="🤝">Placement</a>
+    <a href="../public/fdfp.php" data-icon="🏢">Cabinet FDFP</a>
+    <?php if ($user && is_admin()): ?>
+      <a href="../admin/dashboard.php" data-icon="⚙️">Admin</a>
+    <?php endif; ?>
+  </nav>
+</div>
+
+<style>
+/* Top/bottom bars styles for admin header (reusing same classes) */
+.top-bar { display:none; }
+.bottom-bar { display:none; }
+@media (max-width:1024px){
+  /* hide original admin toggle/panel to avoid conflicts */
+  #adminMenuToggle, #adminMobilePanel { display:none !important; }
+  .top-bar { display:block; position:fixed; top:0; left:0; right:0; background:rgba(255,255,255,0.98); z-index:10000; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+  .top-nav{ display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
+  .top-nav a{ color:#063244; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
+  .bottom-bar{ display:block; position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.98); z-index:10000; box-shadow:0 -6px 20px rgba(0,0,0,0.08); }
+  .bottom-nav{ display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
+  .bottom-nav a{ color:#063244; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
+  body{ padding-top:56px; padding-bottom:64px; }
+}
+
+/* Enhanced look */
+.top-bar .top-nav a, .bottom-bar .bottom-nav a{ position:relative; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 10px; border-radius:10px; min-width:72px; text-align:center; font-size:0.92rem; color:#063244; background:transparent; transition:background 200ms ease, transform 180ms, box-shadow 200ms ease; }
+.top-bar .top-nav a::before, .bottom-bar .bottom-nav a::before{ content:attr(data-icon); font-size:1.25rem; display:block; }
+.top-bar .top-nav a:hover, .bottom-bar .bottom-nav a:hover{ transform:translateY(-3px); background:rgba(5,150,105,0.06); box-shadow:0 6px 18px rgba(2,6,23,0.06); }
+.top-bar .top-nav a.active, .bottom-bar .bottom-nav a.active{ background:linear-gradient(135deg,#06b6d4,#2563eb); color:#fff; box-shadow:0 10px 30px rgba(37,99,235,0.14); }
+
+@supports(padding: max(0px)){
+  .top-bar{ padding-top: calc(env(safe-area-inset-top) + 8px); }
+  body{ padding-top: calc(env(safe-area-inset-top) + 56px); }
+  .bottom-bar{ padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+  body{ padding-bottom: calc(env(safe-area-inset-bottom) + 64px); }
+}
+</style>
+
+<script>
+// Manage visibility aria-hidden for admin top/bottom bars
+(function(){
+  function updateBars(){
+    var top = document.querySelector('.top-bar');
+    var bottom = document.querySelector('.bottom-bar');
+    if(!top||!bottom) return;
+    var small = window.matchMedia('(max-width:1024px)').matches;
+    if(small){ top.setAttribute('aria-hidden','false'); top.style.display='block'; bottom.setAttribute('aria-hidden','false'); bottom.style.display='block'; }
+    else{ top.setAttribute('aria-hidden','true'); top.style.display='none'; bottom.setAttribute('aria-hidden','true'); bottom.style.display='none'; }
+  }
+  document.addEventListener('DOMContentLoaded', updateBars);
+  window.addEventListener('resize', updateBars);
+})();
+</script>
+
+<script>
+// mark active link in admin header bars
+(function(){
+  function markActive(){
+    var path = window.location.pathname.split('/').pop();
+    var topLinks = document.querySelectorAll('.top-bar .top-nav a');
+    var bottomLinks = document.querySelectorAll('.bottom-bar .bottom-nav a');
+    [topLinks, bottomLinks].forEach(function(list){
+      list.forEach(function(a){
+        var href = a.getAttribute('href');
+        var file = href.split('/').pop();
+        if(file === path || (file === 'index.php' && (path === '' || path === 'index.php'))){ a.classList.add('active'); }
+        else { a.classList.remove('active'); }
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', markActive);
+  window.addEventListener('popstate', markActive);
+})();
+</script>

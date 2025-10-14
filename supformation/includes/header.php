@@ -67,6 +67,33 @@ $user = current_user();
   </div>
 </header>
 
+<!-- Top bar for small screens: Accueil, Contact, and auth (Connexion/Inscription or Salut + Déconnexion) -->
+<div class="top-bar" aria-hidden="true">
+  <nav class="top-nav">
+    <a href="index.php" data-icon="🏠">Accueil</a>
+    <a href="contact.php" data-icon="✉️">Contact</a>
+    <?php if ($user): ?>
+      <a href="#" data-icon="👋" class="top-greet" onclick="event.preventDefault();">Salut, <?=htmlspecialchars($user['first_name'])?></a>
+      <a href="logout.php" data-icon="🔑">Déconnexion</a>
+    <?php else: ?>
+      <a href="login.php" data-icon="🔑">Connexion</a>
+      <a href="register.php" data-icon="📝">Inscription</a>
+    <?php endif; ?>
+  </nav>
+</div>
+
+<!-- Bottom bar fixed on small screens: Enseignement Supérieur, Placement, Cabinet FDFP (+ Admin for admins) -->
+<div class="bottom-bar" aria-hidden="true">
+  <nav class="bottom-nav">
+    <a href="enseignement.php" data-icon="🎓">Enseignement Supérieur</a>
+    <a href="placement.php" data-icon="🤝">Placement</a>
+    <a href="fdfp.php" data-icon="🏢">Cabinet FDFP</a>
+    <?php if ($user && is_admin()): ?>
+      <a href="../admin/dashboard.php" data-icon="⚙️">Admin</a>
+    <?php endif; ?>
+  </nav>
+</div>
+
 <style>
 /* Toggle & mobile panel styles */
 .menu-toggle {
@@ -187,11 +214,63 @@ $user = current_user();
   /* Hide nav and auth and reduce header chrome so toggle is the only visible element */
   .main-nav, .auth, .brand { display: none !important; }
   .site-header { background: transparent !important; box-shadow: none !important; padding: 0.25rem 0 !important; }
-  .menu-toggle { display: flex; }
+  /* Hide the old toggle/panel on small screens - we will use the fixed top/bottom bars instead */
+  .menu-toggle, .mobile-panel { display: none !important; }
+  .menu-toggle { visibility: hidden !important; }
+  
+  /* Top bar fixed */
+  .top-bar { display: block; position: fixed; top: 0; left: 0; right: 0; background: rgba(255,255,255,0.98); z-index: 10000; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+  .top-nav { display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
+  .top-nav a { color:#0f172a; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
+
+  /* Bottom bar fixed */
+  .bottom-bar { display:block; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.98); z-index: 10000; box-shadow: 0 -6px 20px rgba(0,0,0,0.08); }
+  .bottom-nav { display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
+  .bottom-nav a { color:#0f172a; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
+
+  /* Ensure page content doesn't hide under top/bottom bars */
+  body { padding-top: 56px; padding-bottom: 64px; }
   /* keep the header height minimal so only toggle occupies space */
   .header-inner { display:flex; align-items:center; justify-content:center; padding: 0.25rem 1rem; }
   /* ensure menu toggle is on the right and visible */
   .menu-toggle { display: flex; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); }
+}
+
+/* Enhanced visuals for top/bottom bars */
+.top-bar .top-nav a,
+.bottom-bar .bottom-nav a {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  min-width: 72px;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #063244;
+  background: transparent;
+  transition: background 200ms ease, transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease;
+}
+.top-bar .top-nav a::before,
+.bottom-bar .bottom-nav a::before {
+  content: attr(data-icon);
+  font-size: 1.25rem;
+  display:block;
+}
+.top-bar .top-nav a:hover,
+.bottom-bar .bottom-nav a:hover { transform: translateY(-3px); background: rgba(5,150,105,0.06); box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+.top-bar .top-nav a.active,
+.bottom-bar .bottom-nav a.active { background: linear-gradient(135deg,#06b6d4,#2563eb); color: #fff; box-shadow: 0 10px 30px rgba(37,99,235,0.14); }
+
+/* Safe-area support */
+@supports(padding: max(0px)){
+  .top-bar { padding-top: calc(env(safe-area-inset-top) + 8px); }
+  body { padding-top: calc(env(safe-area-inset-top) + 56px); }
+  .bottom-bar { padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+  body { padding-bottom: calc(env(safe-area-inset-bottom) + 64px); }
 }
 
 </style>
@@ -343,4 +422,49 @@ document.addEventListener('DOMContentLoaded', function(){
   // ensure logo is present at load too (avoids race / path issues)
   ensureMobileLogo();
 });
+</script>
+
+<script>
+// Manage top/bottom bars visibility and aria-hidden for accessibility
+(function(){
+  function updateBars() {
+    var top = document.querySelector('.top-bar');
+    var bottom = document.querySelector('.bottom-bar');
+    if (!top || !bottom) return;
+    var small = window.matchMedia('(max-width:1024px)').matches;
+    if (small) {
+      top.setAttribute('aria-hidden','false'); top.style.display='block';
+      bottom.setAttribute('aria-hidden','false'); bottom.style.display='block';
+    } else {
+      top.setAttribute('aria-hidden','true'); top.style.display='none';
+      bottom.setAttribute('aria-hidden','true'); bottom.style.display='none';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', updateBars);
+  window.addEventListener('resize', updateBars);
+})();
+</script>
+
+<script>
+// Mark active link in top/bottom bars
+(function(){
+  function markActive(){
+    var path = window.location.pathname.split('/').pop();
+    var topLinks = document.querySelectorAll('.top-bar .top-nav a');
+    var bottomLinks = document.querySelectorAll('.bottom-bar .bottom-nav a');
+    [topLinks, bottomLinks].forEach(function(list){
+      list.forEach(function(a){
+        var href = a.getAttribute('href');
+        var file = href.split('/').pop();
+        if (file === path || (file === 'index.php' && (path === '' || path === 'index.php'))) {
+          a.classList.add('active');
+        } else {
+          a.classList.remove('active');
+        }
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', markActive);
+  window.addEventListener('popstate', markActive);
+})();
 </script>
