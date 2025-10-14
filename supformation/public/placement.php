@@ -101,12 +101,12 @@ if (empty($publications)) {
 <section class="placement-section">
   <div class="placement-container">
     
-    <div class="placement-illustration">
-      <img src="assets/pla.jpg" alt="Placement de personnel" loading="lazy">
+    <div class="placement-illustration scroll-fade">
+      <img src="assets/pla.jpg" alt="Placement de personnel" loading="lazy" class="scroll-fade">
       <div class="pulse-glow"></div>
     </div>
 
-    <div class="placement-text">
+    <div class="placement-text scroll-fade">
       <h2>🤝 Placement et Insertion de Personnel</h2>
       <p>
         Nous accompagnons les diplômés et les professionnels dans leur
@@ -126,7 +126,7 @@ if (empty($publications)) {
 
 <!-- Zone publications -->
 <div class="publications">
-    <h3>Actualités & Publications</h3>
+  <h3 class="publications-title">Actualités & Publications</h3>
     <?php if ($publications): ?>
         <?php foreach ($publications as $pub): 
           // Robust fallbacks: the DB and older code sometimes use french keys (titre/contenu) or english (title/content)
@@ -144,7 +144,7 @@ if (empty($publications)) {
           // Media may be aliased as media, media_file or filename depending on the query
           $media = $pub['media'] ?? $pub['media_file'] ?? $pub['filename'] ?? '';
         ?>
-          <div class="publication">
+          <div class="publication scroll-fade">
             <h4><?= e($title) ?></h4>
             <?php if (!empty($content)): ?>
               <p><?= e($content) ?></p>
@@ -152,10 +152,10 @@ if (empty($publications)) {
             <?php if (!empty($media)): 
               $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
               if (in_array($ext, ['jpg','jpeg','png','gif'])): ?>
-                <img src="uploads/<?= e($media) ?>" alt="">
+                <img src="uploads/<?= e($media) ?>" alt="" class="scroll-fade">
                 <div class="download-link"><a href="uploads/<?= e($media) ?>" download="<?= e(basename($media)) ?>">Télécharger</a></div>
               <?php elseif ($ext === 'mp4'): ?>
-                <video src="uploads/<?= e($media) ?>" controls></video>
+                <video src="uploads/<?= e($media) ?>" controls class="scroll-fade"></video>
               <?php elseif ($ext === 'pdf'): ?>
                 <a href="uploads/<?= e($media) ?>" target="_blank">Voir PDF</a>
               <?php endif; 
@@ -167,9 +167,7 @@ if (empty($publications)) {
     <?php endif; ?>
 </div>
 
-<div class="inscription">
-    <a href="paydunya_checkout.php?domaine=placement" class="btn">S'inscrire & Payer</a>
-</div>
+
 
 <!-- Choix modal: Entreprise vs Chercheur d'emploi -->
 <style>
@@ -255,4 +253,50 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
+<style>
+/* --- Titre Actualités & Publications dynamique --- */
+.publications-title {
+  text-align: center;
+  font-size: 2.3rem;
+  font-weight: 900;
+  margin: 2.5rem auto 2.2rem auto;
+  background: linear-gradient(90deg, #1877f2, #0a8d36ff, #2edb1eff, #1877f2);
+  background-size: 300% 100%;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 6px 18px rgba(24,119,242,0.13));
+  letter-spacing: 1.5px;
+  animation: gradientMove 5s linear infinite, fadeInUp 1.1s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), filter 0.3s;
+  cursor: pointer;
+}
+.publications-title:hover {
+  transform: scale(1.04) translateY(-2px);
+  filter: drop-shadow(0 10px 32px rgba(24,119,242,0.18));
+}
+</style>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>
+
+<!-- Scroll reveal (fade + translate) -->
+<style>
+.scroll-fade { opacity: 0; transform: translateY(36px) scale(0.985); transition: opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); will-change: opacity, transform; }
+.scroll-fade.visible { opacity: 1; transform: translateY(0) scale(1); }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('.scroll-fade');
+  if (!els.length) return;
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries, observer){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+      });
+    }, { threshold: 0.18 });
+    els.forEach(function(el){ obs.observe(el); });
+  } else {
+    els.forEach(function(el){ el.classList.add('visible'); });
+  }
+});
+</script>

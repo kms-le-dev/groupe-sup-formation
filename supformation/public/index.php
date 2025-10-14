@@ -193,71 +193,71 @@ $csrf = generate_csrf_token();
   </div>
 </div>
 
-<div class="GSF">
-  <h1>Groupe Sup'Formation</h1>
+<div class="GSF scroll-fade">
+  <h1 class="scroll-fade">Groupe Sup'Formation</h1>
 </div>
 
 <div class="media-section">
   <div class="side-images left-images">
-    <img src="assets/0img.jpg" alt="Image gauche 1">
-    <img src="assets/1img.jpg" alt="Image gauche 2">
+  <img src="assets/0img.jpg" alt="Image gauche 1" class="scroll-fade">
+  <img src="assets/1img.jpg" alt="Image gauche 2" class="scroll-fade">
   </div>
 
   <div class="video-container">
-    <video autoplay muted loop playsinline>
+    <video autoplay muted loop playsinline class="scroll-fade">
       <source src="assets/video.mp4" type="video/mp4">
       Votre navigateur ne supporte pas la vidéo.
     </video>
   </div>
 
   <div class="side-images right-images">
-    <img src="assets/2img.jpg" alt="Image droite 1">
-    <img src="assets/3img.jpg" alt="Image droite 2">
+  <img src="assets/2img.jpg" alt="Image droite 1" class="scroll-fade">
+  <img src="assets/3img.jpg" alt="Image droite 2" class="scroll-fade">
   </div>
 </div>
 
-    <div class="GSF">
-      <h1>Groupe Sup'Formation</h1>
-      <p>Enseignement supérieur, placement de personnel, cabinet de formation FDFP.</p>
+    <div class="GSF scroll-fade">
+      <h1 class="scroll-fade">Groupe Sup'Formation</h1>
+      <p class="scroll-fade">Enseignement supérieur, placement de personnel, cabinet de formation FDFP.</p>
     </div>
   </section>
   <section class="services-section">
-  <h2 class="section-title">Nos Pôles de Formation</h2>
-  <p class="section-subtitle">
+  <h2 class="section-title scroll-fade">Nos Pôles de Formation</h2>
+  <p class="section-subtitle scroll-fade">
     Découvrez nos domaines d’excellence et rejoignez le <strong>Groupe Sup’Formation</strong> pour booster votre avenir académique et professionnel.
   </p>
 
   <div class="services-grid">
-    <div class="service-card">
+    <div class="service-card scroll-fade">
       <div class="icon">🎓</div>
       <h3>Enseignement Supérieur</h3>
       <p>BTS, DUT, Licence, Master et Validation des Acquis de l’Expérience (VAE). Des parcours diplômants reconnus et adaptés au monde professionnel.</p>
     </div>
 
-    <div class="service-card">
+    <div class="service-card scroll-fade">
       <div class="icon">💼</div>
       <h3>Formation Qualifiante</h3>
       <p>Des formations pratiques et courtes pour acquérir rapidement des compétences recherchées sur le marché du travail.</p>
     </div>
 
-    <div class="service-card">
+    <div class="service-card scroll-fade">
       <div class="icon">🤝</div>
       <h3>Placement & Insertion</h3>
       <p>Accompagnement professionnel pour faciliter l’accès à l’emploi grâce à un vaste réseau d’entreprises partenaires.</p>
     </div>
 
-    <div class="service-card">
+    <div class="service-card scroll-fade">
       <div class="icon">🏢</div>
       <h3>Formation Professionnelle FDFP</h3>
       <p>Formation continue pour les entreprises et institutions publiques, soutenue par le <strong>FDFP</strong>.</p>
     </div>
   </div>
 
-  <div class="GSF">
-  <h1>Notre Etablissement</h1>
+  <div class="GSF scroll-fade">
+  <h1 class="scroll-fade">Notre Etablissement</h1>
   </div>
 
-  <div class="c33promo">
+  <div class="c33promo scroll-fade">
   <h2>Envie de vous spécialiser et de booster votre carrière ? Envie de continuer vos études et d'obtenir le BAC, DUT, BTS, LICENCE, MASTER ?</h2>
   <p>
     Acquérir des compétences solides dans un domaine précis et être prêt(e) à conquérir le marché de l’emploi n’a jamais été aussi simple.<br>
@@ -366,6 +366,18 @@ $csrf = generate_csrf_token();
 
 
 <style>
+/* Animation d'apparition magique au scroll */
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: drop-shadow(0 6px 18px rgba(24,119,242,0.10));
+}
   
 
   h1 {
@@ -559,6 +571,27 @@ $csrf = generate_csrf_token();
 
 
 </main>
+
+<script>
+// Apparition magique au scroll (IntersectionObserver)
+document.addEventListener('DOMContentLoaded', function() {
+  var els = document.querySelectorAll('.scroll-fade');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+    els.forEach(function(el) { obs.observe(el); });
+  } else {
+    // Fallback: tout afficher
+    els.forEach(function(el) { el.classList.add('visible'); });
+  }
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
 <script src="assets/js/main.js" defer></script>

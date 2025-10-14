@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 $message = "";
 
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nom = trim($_POST['nom']);
     $email = trim($_POST['email']);
@@ -17,37 +18,40 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($nom) || empty($email) || empty($msg)) {
         $message = "Veuillez remplir tous les champs obligatoires.";
     } else {
-        // Envoi email via PHPMailer 
-        require __DIR__ . '/../vendor/autoload.php';
+        // Prépare les données à envoyer à EmailJS
+        $data = [
+            'service_id' => 'default_service', // ou ton service ID exact si différent
+            'template_id' => 'template_o4eyaqn', // ton template ID
+            'user_id' => 'tKqFOfM8cHTyTPeG7', // ta clé publique EmailJS
+            'template_params' => [
+                'title' => "Contact Us",        // sujet ou titre
+                'name' => $nom,                 // nom envoyé au template
+                'email' => $email,              // email envoyé au template
+                // Si tu veux passer le téléphone et le message, il faut aussi modifier le template pour accepter ces variables !
+                'telephone' => $telephone,      
+                'message' => $msg
+            ]
+        ];
 
-        $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'ton_email@gmail.com';
-            $mail->Password = 'ton_mot_de_passe_app';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+        // Envoi de la requête HTTP POST vers EmailJS API
+        $ch = curl_init('https://api.emailjs.com/api/v1.0/email/send');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+        curl_close($ch);
 
-            $mail->setFrom($email, $nom);
-            $mail->addAddress('admin@supformation.com', 'Admin SupFormation');
-
-            $mail->isHTML(true);
-            $mail->Subject = "Message contact - $nom";
-            $mail->Body = "<p><b>Nom:</b> $nom</p>
-                           <p><b>Email:</b> $email</p>
-                           <p><b>Téléphone:</b> $telephone</p>
-                           <p><b>Message:</b> $msg</p>";
-
-            $mail->send();
-            $message = "Votre message a été envoyé avec succès !";
-        } catch (Exception $e) {
-            $message = "Erreur lors de l'envoi du message: {$mail->ErrorInfo}";
+        if ($error) {
+            $message = "Erreur lors de l'envoi : $error";
+        } else {
+            $message = "Message envoyé avec succès !";
         }
     }
 }
 ?>
+
 
 
 
@@ -67,10 +71,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <body>
 
-<h1>Contact</h1>
+<h1 class="contact-title">Contact</h1>
 
 <?php if ($message): ?>
-    <div class="alert"><?= e($message) ?></div>
+  <div class="alert" role="status"><?= e($message) ?></div>
 <?php endif; ?>
 
 <form method="POST" action="">
@@ -552,6 +556,48 @@ form textarea:focus-visible,
 form button:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
+}
+/* --- Titre Contact dynamique --- */
+.contact-title {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 2.5rem auto 2rem auto;
+  background: linear-gradient(90deg, #0a8d36ff, #2edb1eff, #1877f2, #0a8d36ff);
+  background-size: 300% 100%;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 6px 18px rgba(16,185,129,0.18));
+  letter-spacing: 2px;
+  animation: gradientMove 5s linear infinite, fadeInUp 1.1s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), filter 0.3s;
+  cursor: pointer;
+}
+.contact-title:hover {
+  transform: scale(1.04) translateY(-2px);
+  filter: drop-shadow(0 10px 32px rgba(16,185,129,0.25));
+}
+/* Message PHP centré et stylisé */
+.alert {
+  display: block;
+  margin: 1.5rem auto 2.2rem auto;
+  max-width: 600px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding: 1.1rem 1.5rem;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0fdf4 60%, #f1f5f9 100%);
+  color: #15803d;
+  border: 1.5px solid #bbf7d0;
+  box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+  letter-spacing: 0.5px;
+  animation: fadeInUp 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.alert:empty { display: none; }
+@media (max-width: 600px) {
+  .alert { font-size: 1rem; padding: 0.8rem 0.7rem; }
 }
 </style>
 <?php include __DIR__ . '/../includes/footer.php'; ?>
