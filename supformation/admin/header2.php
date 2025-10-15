@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- Bottom bar fixed on small screens (admin header) -->
 <div class="bottom-bar" aria-hidden="true">
   <nav class="bottom-nav">
-    <a href="../public/enseignement.php" data-icon="🎓">Enseignement Supérieur</a>
+    <a href="../public/enseignement.php" data-icon="🎓">Enseignement Sup</a>
     <a href="../public/placement.php" data-icon="🤝">Placement</a>
     <a href="../public/fdfp.php" data-icon="🏢">Cabinet FDFP</a>
     <?php if ($user && is_admin()): ?>
@@ -276,33 +276,114 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <style>
+  /* 🔒 Forcer la disparition complète du bouton toggle */
+#adminMenuToggle,
+.menu-toggle {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Top/bottom bars styles for admin header (reusing same classes) */
 .top-bar { display:none; }
 .bottom-bar { display:none; }
 @media (max-width:1024px){
   /* hide original admin toggle/panel to avoid conflicts */
   #adminMenuToggle, #adminMobilePanel { display:none !important; }
-  .top-bar { display:block; position:fixed; top:0; left:0; right:0; background:rgba(255,255,255,0.98); z-index:10000; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
-  .top-nav{ display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
-  .top-nav a{ color:#063244; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
-  .bottom-bar{ display:block; position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.98); z-index:10000; box-shadow:0 -6px 20px rgba(0,0,0,0.08); }
-  .bottom-nav{ display:flex; gap:0.25rem; justify-content:space-around; align-items:center; padding:0.5rem 0; }
-  .bottom-nav a{ color:#063244; text-decoration:none; font-weight:700; padding:0.5rem 0.75rem; }
-  body{ padding-top:56px; padding-bottom:64px; }
+  .top-bar {
+    display:block;
+    position:fixed;
+    top:0; left:0; right:0;
+    background:rgba(255,255,255,0.98);
+    z-index:10000;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    text-decoration: none !important;
+
+  }
+
+  .top-nav {
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:0.3rem 0; /* ↓ réduit hauteur */
+  }
+
+  .bottom-bar {
+    display:block;
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:rgba(255,255,255,0.98);
+    z-index:10000;
+    box-shadow:0 -3px 10px rgba(0,0,0,0.08);
+  }
+
+  .bottom-nav {
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:0.3rem 0; /* ↓ réduit hauteur */
+  }
+
+  body {
+    padding-top:48px; /* ↓ adapté à la nouvelle hauteur */
+    padding-bottom:52px;
+  }
 }
 
-/* Enhanced look */
-.top-bar .top-nav a, .bottom-bar .bottom-nav a{ position:relative; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 10px; border-radius:10px; min-width:72px; text-align:center; font-size:0.92rem; color:#063244; background:transparent; transition:background 200ms ease, transform 180ms, box-shadow 200ms ease; }
-.top-bar .top-nav a::before, .bottom-bar .bottom-nav a::before{ content:attr(data-icon); font-size:1.25rem; display:block; }
-.top-bar .top-nav a:hover, .bottom-bar .bottom-nav a:hover{ transform:translateY(-3px); background:rgba(5,150,105,0.06); box-shadow:0 6px 18px rgba(2,6,23,0.06); }
-.top-bar .top-nav a.active, .bottom-bar .bottom-nav a.active{ background:linear-gradient(135deg,#06b6d4,#2563eb); color:#fff; box-shadow:0 10px 30px rgba(37,99,235,0.14); }
+/* Style global allégé pour les liens */
+.top-bar .top-nav a,
+.bottom-bar .bottom-nav a {
+  position:relative;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px; /* ↓ espace réduit entre icône et texte */
+  padding:4px 6px;
+  border-radius:8px;
+  min-width:60px; /* ↓ plus compact */
+  text-align:center;
+  font-size:0.8rem; /* ↓ texte plus petit */
+  color:#063244;
+  background:transparent;
+  transition:background 200ms ease, transform 180ms, box-shadow 200ms ease;
+  text-decoration: none !important;
 
+}
+
+.top-bar .top-nav a::before,
+.bottom-bar .bottom-nav a::before {
+  content:attr(data-icon);
+  font-size:1rem; /* ↓ icône plus petite */
+  display:block;
+}
+
+.top-bar .top-nav a:hover,
+.bottom-bar .bottom-nav a:hover {
+  transform:translateY(-2px);
+  background:rgba(5,150,105,0.05);
+  box-shadow:0 3px 10px rgba(2,6,23,0.05);
+}
+
+.top-bar .top-nav a.active,
+.bottom-bar .bottom-nav a.active {
+  background: #028343ff; 
+  color:#fff;
+  box-shadow:0 6px 18px rgba(37,99,235,0.14);
+}
+
+/* Safe area (iPhone) */
 @supports(padding: max(0px)){
-  .top-bar{ padding-top: calc(env(safe-area-inset-top) + 8px); }
-  body{ padding-top: calc(env(safe-area-inset-top) + 56px); }
-  .bottom-bar{ padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
-  body{ padding-bottom: calc(env(safe-area-inset-bottom) + 64px); }
+  .top-bar { padding-top: calc(env(safe-area-inset-top) + 4px); }
+  body { padding-top: calc(env(safe-area-inset-top) + 48px); }
+  .bottom-bar { padding-bottom: calc(env(safe-area-inset-bottom) + 4px); }
+  body { padding-bottom: calc(env(safe-area-inset-bottom) + 52px); }
 }
+
 </style>
 
 <script>

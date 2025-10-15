@@ -12,15 +12,31 @@ define('DB_NAME','supformation_db');
 define('DB_USER','root');
 define('DB_PASS',''); // mets un mot de passe fort
 
+
+// // Hôte de la base distante
+// define('DB_HOST', 'sql301.infinityfree.com');
+// // Nom de la base de données
+// define('DB_NAME', 'if0_40170195_supformation_db');
+// // Nom d'utilisateur FreeDB
+// define('DB_USER', 'if0_40170195');
+// // Mot de passe FreeDB
+// define('DB_PASS', 'Fkucpmindset');
+
+
+
+
 // Site
-define('BASE_URL','http://localhost/groupe-sup-formation/supformation/public'); // adapte
+// define('BASE_URL', 'https://gsformation.ct.ws'); // adapte cette URL à ton site réel
+// define('ASSETS', BASE_URL . '/assets');
+
+define('BASE_URL','http://localhost/groupe-sup-formation/supformation/public'); 
 define('ASSETS','/groupe-sup-formation/supformation/public/assets');
 
 
 // SMTP placeholders - REMPLACE CES VALEURS AVANT MISE EN PRODUCTION
-define('SMTP_HOST',''); // ex: 'smtp-relay.sendinblue.com'
+define('SMTP_HOST','smtp.gmail.com'); // ex: 'smtp-relay.sendinblue.com'
 define('SMTP_PORT',587);
-define('SMTP_USER',''); // ex: 'ton@domaine.com'
+define('SMTP_USER','kanigui43@gmail.com'); // ex: 'ton@domaine.com'
 define('SMTP_PASS',''); // ex: 'mot_de_passe_smtp'
 // Adresse par défaut utilisée comme expéditeur
 define('MAIL_FROM','kanigui43@gmail.com');

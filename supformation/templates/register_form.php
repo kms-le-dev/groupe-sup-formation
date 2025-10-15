@@ -37,7 +37,7 @@ body {
 
 .form-group {
     margin-bottom: 1.2rem;
-    position: relative;
+    position: relative; /* nécessaire pour positionner le toggle à l'intérieur */
 }
 
 .form-group label {
@@ -49,12 +49,14 @@ body {
 
 .form-group input {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 3rem 0.75rem 1rem; /* padding-right suffisant pour le toggle */
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s;
+    box-sizing: border-box;
 }
+
 
 .form-group input:focus {
     outline: none;
