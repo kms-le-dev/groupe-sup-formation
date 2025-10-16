@@ -36,11 +36,13 @@ define('ASSETS','/groupe-sup-formation/supformation/public/assets');
 // SMTP placeholders - REMPLACE CES VALEURS AVANT MISE EN PRODUCTION
 define('SMTP_HOST','smtp.gmail.com'); // ex: 'smtp-relay.sendinblue.com'
 define('SMTP_PORT',587);
-define('SMTP_USER','kanigui43@gmail.com'); // ex: 'ton@domaine.com'
-define('SMTP_PASS',''); // ex: 'mot_de_passe_smtp'
+define('SMTP_USER','groupesupformation@gmail.com'); // ex: 'ton@domaine.com'
+define('SMTP_PASS','vpfcxjksciqemjfq'); // ex: 'mot_de_passe_smtp'
+
 // Adresse par défaut utilisée comme expéditeur
-define('MAIL_FROM','kanigui43@gmail.com');
-define('MAIL_FROM_NAME','SupFormation');
+define('MAIL_FROM', 'groupesupformation@gmail.com');
+define('MAIL_FROM_NAME', 'SupFormation'); 
+
 
 // Active le debug SMTP pour PHPMailer (0 = off, 2 = client+server). Mettre à 2 pour développement local.
 define('SMTP_DEBUG', 2);
