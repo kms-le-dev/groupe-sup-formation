@@ -157,18 +157,15 @@ try {
 
   // Define preferred order and readable labels
   $order = [
-    
-    'company' => 'Entreprise',
-    'name' => 'Nom',
-    'contact' => 'Contact',
-    'phone' => 'Téléphone',
-    'email' => 'Email',
-    'city' => 'Ville',
-    'location' => 'Localisation',
-    'domain' => 'Domaine',
-    'position' => 'Poste',
-    'salary' => 'Salaire',
-    'message' => 'Message',
+    'Nom de l\'entreprise' => 'Entreprise',
+    'Domaine d_activite' => 'Domaine d\'activité',
+    'Adresse geographique' => 'Adresse',
+    'contacts' => 'Contacts',
+    'Email' => 'Email',
+    'Niveau de qualification' => 'Niveau(x) de qualification',
+    'Nombre d_employe souhaité' => 'Nombre d\'employés souhaités',
+    'Numero DFE' => 'Numéro DFE',
+    'RCCM' => 'RCCM'
   ];
 
   // helper to sanitize values
@@ -201,7 +198,11 @@ try {
       }
     }
     if ($val !== null && $val !== '') {
-      $fields[$label] = $sanitize_text($val);
+      if ($key === 'Niveau de qualification' && is_array($val)) {
+        $fields[$label] = "\n▫️ " . implode("\n▫️ ", array_map($sanitize_text, $val));
+      } else {
+        $fields[$label] = $sanitize_text($val);
+      }
     }
   }
 

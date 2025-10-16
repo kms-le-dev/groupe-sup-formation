@@ -12,6 +12,28 @@ require_once __DIR__ . '/../includes/functions.php';
   <title>Formulaire Placement - Entreprise</title>
   <!-- Feuille de style dynamique: customise via query params: primary, mode, base_size, radius -->
   <link rel="stylesheet" href="assets/css/dynamic_style.php?primary=%2346b903&mode=light&base_size=16px&radius=8px">
+  <style>
+    .qualif-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .qualif-label {
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      gap: 7px;
+      margin-bottom: 0;
+    }
+    .qualif-label input[type="checkbox"] {
+      margin: 0;
+      vertical-align: middle;
+      accent-color: #46b903;
+      width: 18px;
+      height: 18px;
+    }
+  </style>
 </head>
 
 
@@ -42,9 +64,11 @@ require_once __DIR__ . '/../includes/functions.php';
 
       <fieldset>
         <legend>6) Niveau de qualification de l'employé</legend>
-        <label><input type="radio" name="Niveau de qualification" value="EMPLOYES/OUVRIERS QUALIFIES" required> EMPLOYES/ OUVRIERS QUALIFIES</label><br>
-        <label><input type="radio" name="Niveau de qualification" value="AGENTS DE MAITRISE OU TECHNICIENS"> AGENTS DE MAITRISE OU TECHNICIENS</label><br>
-        <label><input type="radio" name="Niveau de qualification" value="CADRES"> CADRES</label>
+        <div class="qualif-group">
+          <label class="qualif-label"><input type="checkbox" name="Niveau de qualification[]" value="EMPLOYES/OUVRIERS QUALIFIES"> EMPLOYES/ OUVRIERS QUALIFIES</label>
+          <label class="qualif-label"><input type="checkbox" name="Niveau de qualification[]" value="AGENTS DE MAITRISE OU TECHNICIENS"> AGENTS DE MAITRISE OU TECHNICIENS</label>
+          <label class="qualif-label"><input type="checkbox" name="Niveau de qualification[]" value="CADRES"> CADRES</label>
+        </div>
       </fieldset>
 
       <label>7) Nombre d'employé souhaité<br>
@@ -93,7 +117,17 @@ require_once __DIR__ . '/../includes/functions.php';
 
             var data = new FormData(form);
             var entries = {};
-            data.forEach(function(v,k){ entries[k]=v; });
+            data.forEach(function(v,k){
+              // Gérer les cases à cocher multiples pour les qualifications
+              if (k === 'Niveau de qualification[]') {
+                if (!entries['Niveau de qualification']) {
+                  entries['Niveau de qualification'] = [];
+                }
+                entries['Niveau de qualification'].push(v);
+              } else {
+                entries[k] = v;
+              }
+            });
 
             // try to build PDF with jsPDF; if unavailable, build a simple text blob and send it as .pdf
             var pdfBlob = null;
@@ -127,8 +161,15 @@ require_once __DIR__ . '/../includes/functions.php';
                 // prepare rows and their heights first
                 const rows = Object.keys(entries).map((key) => {
                   const label = key.replace(/_/g, ' ');
-                  const value = entries[key] || '';
-                  const valueLines = doc.splitTextToSize(String(value), col2Width - cellPadding * 2);
+                  let value = entries[key];
+                  
+                  // Formater spécialement les qualifications multiples
+                  if (key === 'Niveau de qualification' && Array.isArray(value)) {
+                    value = value.join('\n• ');
+                    if (value) value = '• ' + value;
+                  }
+                  
+                  const valueLines = doc.splitTextToSize(String(value || ''), col2Width - cellPadding * 2);
                   const cellHeight = Math.max(rowHeight, valueLines.length * 14 + cellPadding);
                   return { label, valueLines, cellHeight };
                 });

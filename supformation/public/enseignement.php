@@ -104,12 +104,84 @@ if (empty($publications)) {
       <p>
         Découvrez nos formations de qualité conçues pour vous accompagner vers la réussite.
         <br><br>
-        Nous proposons des parcours complets :
+        Cliquez sur chaque niveau pour voir les filières :
       </p>
       <ul>
-        <li><strong>BTS / DUT</strong> – Formations pratiques et professionnelles</li>
-        <li><strong>Licence</strong> – Développez vos compétences académiques et techniques</li>
-        <li><strong>Master</strong> – Devenez un expert dans votre domaine</li>
+        <li>
+          <button id="toggle-bts" class="btn-link" aria-expanded="false" aria-controls="bts-list">
+            <strong>BTS / DUT</strong>
+          </button>
+          &nbsp;– Formations pratiques et professionnelles
+
+          <div id="bts-list" class="bts-list" hidden>
+            <ul>
+              <li>FINANCE COMPTABILITE ET GESTION D'ENTREPRISES (FCGE)</li>
+              <li>GESTION COMMERCIALE (GEC)</li>
+              <li>ASSISTANAT DE DIRECTION (AD)</li>
+              <li>RESSOURCES HUMAINES ET COMMUNICATION (RHC)</li>
+              <li>LOGISTIQUE (LOG)</li>
+              <li>GENIE CIVIL: OPTION BATIMENT (GBAT)</li>
+              <li>RESEAU INFORMATIQUE ET TELECOMMUNICATIONS (RIT)</li>
+              <li>INFORMATIQUE DEVELOPPEUR D'APPLICATION (IDA)</li>
+              <li>QUALITE HYGIENE SECURITE ET ENVIRONNEMENT (QHSE)</li>
+              <li>AGRICULTURE TROPICALE OPTION P.VEGETALE/ ANIMALE</li>
+              <li>MAINTENANCE DES SYSTÈMES DE PRODUCTION (MSP)</li>
+              <li>SYSTEMES ELECTRONIQUE ET INFORMATIQUES (SEI)</li>
+              <li>MINE GEOLOGIE PETROLE (MGP)</li>
+              <li>ELECTROTECHNIQUE (ELT)</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <button id="toggle-licence" class="btn-link" aria-expanded="false" aria-controls="licence-list">
+            <strong>Licence</strong>
+          </button>
+          &nbsp;– Développez vos compétences académiques et techniques
+
+          <div id="licence-list" class="bts-list" hidden>
+            <ul>
+              <li>FINANCES COMPTABILITE</li>
+              <li>AUDIT ET CONTROLE DE GESTION</li>
+              <li>MARKETING MANAGEMENT</li>
+              <li>GESTION DES RESSOURCES HUMAINES</li>
+              <li>TRANSPORT LOGISTIQUE</li>
+              <li>GESTION DE PROJETS</li>
+              <li>COMMUNICATION D'ENTREPRISE</li>
+              <li>BATIMENT</li>
+              <li>RESEAUX INFORMATIQUES</li>
+              <li>GENIE LOGICIEL</li>
+              <li>AGRICULTURE TROPICALE OPTION P. VEGETALE/ P. ANIMALE</li>
+              <li>QUALITE HYGIENE SECURITE ET ENVIRONNEMENT (QHSE)</li>
+              <li>ELECTROTECHNIQUE</li>
+              <li>COMMERCE INTERNATIONAL</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <button id="toggle-master" class="btn-link" aria-expanded="false" aria-controls="master-list">
+            <strong>Master</strong>
+          </button>
+          &nbsp;– Devenez un expert dans votre domaine
+
+          <div id="master-list" class="bts-list" hidden>
+            <ul>
+              <li>FINANCES COMPTABILITE</li>
+              <li>AUDIT ET CONTROLE DE GESTION</li>
+              <li>MARKETING MANAGEMENT</li>
+              <li>GESTION DES RESSOURCES HUMAINES</li>
+              <li>TRANSPORT LOGISTIQUE</li>
+              <li>GESTION DE PROJETS</li>
+              <li>COMMUNICATION D'ENTREPRISE</li>
+              <li>BATIMENT</li>
+              <li>RESEAUX INFORMATIQUES</li>
+              <li>GENIE LOGICIEL</li>
+              <li>AGRICULTURE TROPICALE OPTION P. VEGETALE/ P. ANIMALE</li>
+              <li>QUALITE HYGIENE SECURITE ET ENVIRONNEMENT (QHSE)</li>
+              <li>ELECTROTECHNIQUE</li>
+              <li>COMMERCE INTERNATIONAL</li>
+            </ul>
+          </div>
+        </li>
         <li><strong>VAE</strong> – Valorisez votre expérience par un diplôme reconnu</li>
       </ul>
       <a href="./formulaire.php" class="btn-inscription">S’inscrire maintenant</a>
@@ -212,6 +284,73 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fallback: tout afficher
     els.forEach(function(el) { el.classList.add('visible'); });
   }
+});
+</script>
+
+<!-- Styles et script pour le toggle BTS/DUT -->
+<style>
+.btn-link {
+  background: none;
+  border: none;
+  color: #0a58ca;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.btn-link:focus { outline: 2px solid rgba(10,88,202,0.2); }
+.bts-list {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #0a58ca;
+  background: #f7fbff;
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(10,88,202,0.04);
+}
+.bts-list ul { margin: 0; padding-left: 1.2rem; }
+.bts-list li { margin: 0.25rem 0; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Fonction réutilisable pour le toggle
+  function setupToggle(btnId, listId) {
+    var btn = document.getElementById(btnId);
+    var list = document.getElementById(listId);
+    if (!btn || !list) return;
+    
+    btn.addEventListener('click', function(e){
+      var isHidden = list.hasAttribute('hidden');
+      if (isHidden) {
+        list.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded','true');
+        // petite animation
+        list.style.opacity = 0;
+        list.style.transform = 'translateY(-6px)';
+        requestAnimationFrame(function(){
+          list.style.transition = 'opacity 240ms ease, transform 240ms ease';
+          list.style.opacity = 1;
+          list.style.transform = 'translateY(0)';
+        });
+      } else {
+        // cacher avec animation
+        list.style.transition = 'opacity 180ms ease, transform 180ms ease';
+        list.style.opacity = 0;
+        list.style.transform = 'translateY(-6px)';
+        list.addEventListener('transitionend', function hideOnce(){
+          list.setAttribute('hidden','');
+          list.style.transition = '';
+          list.removeEventListener('transitionend', hideOnce);
+        });
+        btn.setAttribute('aria-expanded','false');
+      }
+    });
+  }
+
+  // Initialiser tous les toggles
+  setupToggle('toggle-bts', 'bts-list');
+  setupToggle('toggle-licence', 'licence-list');
+  setupToggle('toggle-master', 'master-list');
 });
 </script>
 

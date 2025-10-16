@@ -68,10 +68,55 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
+<style>
+/* Style centré et mis en valeur pour la localisation */
+.map-location {
+  text-align: center;
+  max-width: 900px;
+  margin: 18px auto 0 auto;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #b30000;                    /* rouge GSF */
+  background: linear-gradient(90deg, #fff6f6, #fff1f1);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(179,0,0,0.06);
+  border: 1px solid rgba(179,0,0,0.08);
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
 
+/* Petite icône locale à gauche (optionnel) */
+.map-location::before {
+  content: '📍';
+  display: inline-block;
+  margin-right: 8px;
+  transform: translateY(1px);
+}
+
+/* Responsive : réduire la taille sur petits écrans */
+@media (max-width: 480px) {
+  .map-location {
+    font-size: 1rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+}
+</style>
 <body>
 
-<h1 class="contact-title">Contact</h1>
+<!-- Bandeau contacts en haut -->
+<div class="top-contacts" role="region" aria-label="Nos contacts principaux">
+  <h1 class="contact-title">Nous Contacter</h1>
+  <div class="top-contacts-inner">
+    <a href="tel:+2252735999501" class="top-phone">📞 27 35 99 95 01</a>
+    <a href="tel:+2250574939737" class="top-phone">📞 05 74 93 97 37</a>
+    <a href="tel:+2250706591243" class="top-phone">📞 07 06 59 12 43</a>
+  </div>
+</div>
+
+
+<h1 class="contact-title">Soumettre une demande</h1>
 
 <?php if ($message): ?>
   <div class="alert" role="status"><?= e($message) ?></div>
@@ -92,6 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <div class="map">
     <h3>Notre localisation</h3>
     <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3972.137147803987!2d-4.005823425016036!3d5.396064294582986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNcKwMjMnNDUuOCJOIDTCsDAwJzExLjciVw!5e0!3m2!1sfr!2sci!4v1759691213289!5m2!1sfr!2sci" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <h2 class="map-location">Nous sommes situé au Plateau Dokui, non loin de l'allocodrome</h2>
 </div>
 
 <!-- Section Réseaux Sociaux -->
@@ -106,6 +152,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </a>
     <a href="https://www.facebook.com/groupesupformation" target="_blank" class="social-icon facebook">
       <i class="fab fa-facebook-f"></i>
+    </a>
+    <a href="https://chat.whatsapp.com/DF8ox4lLxwIJlTtg1QHXcZ?mode=wwc" target="_blank" class="social-icon whatsapp">
+      <i class="fab fa-whatsapp"></i>
     </a>
   </div>
 </div>
@@ -173,6 +222,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 .social-icon.tiktok { background: #010101; }
 .social-icon.email { background: #f97316; }
 .social-icon.facebook { background: #1877f2; }
+.social-icon.whatsapp { background: #25D366; }
 
 /* Animation de survol */
 .social-icon:hover {
@@ -577,6 +627,43 @@ form button:focus-visible {
 .contact-title:hover {
   transform: scale(1.04) translateY(-2px);
   filter: drop-shadow(0 10px 32px rgba(16,185,129,0.25));
+}
+/* Bandeau contacts en haut */
+.top-contacts {
+  width: 100%;
+  background: linear-gradient(90deg,#fff4f4, #fff9f9);
+  border-bottom: 2px solid rgba(224,60,60,0.06);
+  padding: 8px 0;
+  box-shadow: 0 6px 18px rgba(224,60,60,0.04);
+}
+.top-contacts-inner{
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  align-items:center;
+  padding:6px 12px;
+}
+.top-phone{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#b30000;
+  background:#fff;
+  padding:8px 14px;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:700;
+  box-shadow:0 6px 18px rgba(179,0,0,0.06);
+  transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.top-phone:active{ transform: scale(0.98); }
+.top-phone:hover{ background:#ffeaea; transform: translateY(-4px); box-shadow:0 12px 30px rgba(224,60,60,0.12); }
+
+@media(max-width:640px){
+  .top-contacts-inner{ gap:8px; padding:6px; }
+  .top-phone{ padding:8px 10px; font-size:0.95rem; }
 }
 /* Message PHP centré et stylisé */
 .alert {

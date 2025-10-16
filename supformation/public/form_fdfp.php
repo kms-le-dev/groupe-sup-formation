@@ -140,10 +140,10 @@ function loadJsPDF(timeout = 5000) {
           return {k: k.replace(/_/g,' ').toUpperCase(), v: String(v)};
         });
         const rows = Math.ceil(entries.length / 2);
-        const margin = 30; // marges réduites pour agrandir le tableau
-        const colGap = 40; // plus d'espace entre les colonnes
-        const colWidth = (pageW - margin * 2 - colGap) / 2;
-        const rowHeight = 70; // hauteur de ligne augmentée
+        const margin = 20; // marges encore plus réduites pour agrandir le tableau davantage
+        const colGap = 30; // espacement entre colonnes optimisé
+        const colWidth = (pageW - margin * 2 - colGap) / 2; // colonnes plus larges
+        const rowHeight = 80; // hauteur de ligne augmentée pour plus de lisibilité
         const tableHeight = rows * rowHeight;
         // calcul du point de départ pour centrer verticalement
         const title = 'Demande de formation';
@@ -169,12 +169,13 @@ function loadJsPDF(timeout = 5000) {
         // texte dans les cellules
         const leftX = tableX + 16;
         const rightX = midX + 16;
-        doc.setFontSize(14); doc.setFont(undefined,'normal');
+        doc.setFontSize(16); // taille de police augmentée pour une meilleure lisibilité
+        doc.setFont(undefined,'normal');
         for (let r = 0; r < rows; r++) {
           const li = r * 2;
           const left = entries[li];
           const right = entries[li + 1];
-          const cellY = startY + r * rowHeight + 26; // baseline ajustée
+          const cellY = startY + r * rowHeight + 30; // baseline ajustée pour le nouveau rowHeight
           if (left) {
             const text = left.k + ': ' + left.v;
             const lines = doc.splitTextToSize(text, colWidth - 24);

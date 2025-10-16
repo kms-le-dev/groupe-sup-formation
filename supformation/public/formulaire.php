@@ -184,6 +184,13 @@ label input[type="number"]{
 @media (max-width:700px){
   .actions{ flex-direction:column; align-items:stretch; }
   .container{ padding:12px; }
+  .actions .btn2 {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: fit-content;
+    text-align: center;
+  }
 }
 
 
@@ -213,7 +220,7 @@ label input[type="number"]{
           <input type="tel" name="telephone" required>
         </label>
 
-        <label>Email
+        <label>Email (obligatoire)
           <input type="email" name="email" required>
         </label>
 
@@ -228,15 +235,15 @@ label input[type="number"]{
 
       <section class="card">
         <h2>Formation demandée</h2>
-        <label>Formation demandée
+        <label>Formation demandée (DUT, BTS, Licence, Master etc...)
           <input type="text" name="formation_demandee">
         </label>
 
-        <label>Niveau demandé
+        <label>Niveau demandé (bac + 1, bac + 2 etc...)
           <input type="text" name="niveau_demandee">
         </label>
 
-        <label>Filière demandée
+        <label>Filière demandée (le nom de la filière)
           <input type="text" name="filiere_demandee">
         </label>
 
@@ -292,7 +299,7 @@ label input[type="number"]{
           <input type="text" name="num_paiement" required>
         </label>
 
-        <label>Photo (JPEG/PNG) — Aperçu :
+        <label>Photo en fond blanc (JPEG/PNG) :
           <input type="file" name="photo" id="photoInput" accept="image/*" >
         </label>
         <div id="photoPreview" class="photo-preview">Aucune photo</div>
@@ -307,6 +314,38 @@ label input[type="number"]{
 
     <!-- Zone invisible qui sera convertie en PDF (on y clone les données) -->
     <div id="pdfContent" class="pdf-content" style="display:none;"></div>
+
+    <!-- Message pour le paiement différé -->
+
+    <div class="card payment-later-message">
+      <p class="alert-payment" style="text-align: center; margin-bottom: 20px;">
+        Si vous voulez effectuer le paiement plus tard, téléchargez le PDF et gardez-le précieusement.<br>
+        Lorsque vous serez prêt, revenez ici et cliquez sur le bouton ci-dessous.
+      </p>
+      <div style="text-align: center;">
+        <a href="inscription.php" class="btn primary" style="text-decoration: none;">
+          Passer directement au paiement
+        </a>
+      </div>
+    </div>
+
+    <style>
+      .alert-payment {
+        color: #e03c3c;
+        font-weight: bold;
+        font-size: 1.08rem;
+        background: linear-gradient(90deg, #ffeaea 60%, #fff6f6 100%);
+        border-radius: 8px;
+        padding: 12px 8px;
+        box-shadow: 0 2px 12px rgba(224,60,60,0.08);
+        animation: alertFadeIn 1.2s cubic-bezier(.4,0,.2,1);
+      }
+      @keyframes alertFadeIn {
+        0% { opacity: 0; transform: scale(0.95) translateY(18px); }
+        60% { opacity: 1; transform: scale(1.04) translateY(-4px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+    </style>
 
   </main>
 
