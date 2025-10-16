@@ -38,15 +38,18 @@ require_once __DIR__ . '/../includes/header.php';
       <label>4) Contacts<input name="contact" required></label>
       <label>5) Email<input name="email" type="email" required></label>
       <label>6) Type de formation demandé
-        <select name="type" required>
-          <option>INSTITUTION PUBLIQUE</option>
-          <option>ENTREPRISE PRIVÉE</option>
-          <option>Plan de formation</option>
-          <option>Projet d'apprentissage</option>
-          <option>projet d'insertion</option>
-          <option>Projet collectif</option>
+        <select name="type" id="typeSelect" required>
+          <option value="INSTITUTION PUBLIQUE">INSTITUTION PUBLIQUE</option>
+          <option value="ENTREPRISE PRIVÉE">ENTREPRISE PRIVÉE</option>
         </select>
       </label>
+      <div id="privateOptions" style="display:none; margin: 10px 0 0 0; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; background: #f8f9fa;">
+        <span style="font-weight:600;">Pour les entreprises privées, cochez le(s) projet(s) :</span><br>
+        <label style="display:inline-block; margin-right:12px;"><input type="checkbox" name="private_projects[]" value="Plan de formation"> Plan de formation</label>
+        <label style="display:inline-block; margin-right:12px;"><input type="checkbox" name="private_projects[]" value="Projet d'apprentissage"> Projet d'apprentissage</label>
+        <label style="display:inline-block; margin-right:12px;"><input type="checkbox" name="private_projects[]" value="Projet d'insertion"> Projet d'insertion</label>
+        <label style="display:inline-block; margin-right:12px;"><input type="checkbox" name="private_projects[]" value="Projet collectif"> Projet collectif</label>
+      </div>
       <label>7) Nombre d'employé<input name="employees" type="number" min="0" required></label>
       <label>8) NIF / DFE (facultatif)<input name="nif"></label>
       <label>RCCM (facultatif)<input name="rccm"></label>
@@ -55,9 +58,8 @@ require_once __DIR__ . '/../includes/header.php';
         <button type="button" id="cancelBtn">Annuler</button>
         <button type="submit" id="submitBtn">Soumettre et Télécharger (PDF)</button>
       </div>
-    </form>
-  </div>
-</div>
+<!-- SCRIPT DYNAMIQUE DÉPLACÉ EN BAS DE PAGE -->
+</body>
 <script>
 // Load jsPDF from CDN if missing and provide a helper
 function loadJsPDF(timeout = 5000) {
@@ -85,13 +87,35 @@ function loadJsPDF(timeout = 5000) {
   const form = document.getElementById('fdfpForm');
   const cancel = document.getElementById('cancelBtn');
   const submitBtn = document.getElementById('submitBtn');
+  const typeSelect = document.getElementById('typeSelect');
+  const privateOptions = document.getElementById('privateOptions');
+
+  // Afficher/masquer les options privées selon le choix
+  typeSelect.addEventListener('change', function() {
+    if (typeSelect.value === 'ENTREPRISE PRIVÉE') {
+      privateOptions.style.display = '';
+    } else {
+      privateOptions.style.display = 'none';
+      // décocher toutes les cases si on repasse sur institution publique
+      privateOptions.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    }
+  });
+
   cancel.addEventListener('click', ()=> location.href = 'index.php');
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
     submitBtn.disabled = true; submitBtn.textContent = 'Envoi...';
     const meta = {};
-    for (const p of new FormData(form).entries()) meta[p[0]] = p[1];
+    for (const p of new FormData(form).entries()) {
+      // Pour les cases à cocher multiples
+      if (p[0] === 'private_projects[]') {
+        if (!meta['private_projects']) meta['private_projects'] = [];
+        meta['private_projects'].push(p[1]);
+      } else {
+        meta[p[0]] = p[1];
+      }
+    }
 
     // ensure jsPDF is available (best-effort)
     const hasJsPDF = await loadJsPDF(4000);
@@ -109,51 +133,56 @@ function loadJsPDF(timeout = 5000) {
         const pageH = doc.internal.pageSize.getHeight();
         doc.setFont('Helvetica');
         // prepare entries
-        const entries = Object.entries(meta).map(([k,v]) => ({k: k.replace(/_/g,' ').toUpperCase(), v: String(v)}));
+        const entries = Object.entries(meta).map(([k,v]) => {
+          if (Array.isArray(v)) {
+            return {k: k.replace(/_/g,' ').toUpperCase(), v: v.join(', ')};
+          }
+          return {k: k.replace(/_/g,' ').toUpperCase(), v: String(v)};
+        });
         const rows = Math.ceil(entries.length / 2);
-        const margin = 50;
-        const colGap = 20;
+        const margin = 30; // marges réduites pour agrandir le tableau
+        const colGap = 40; // plus d'espace entre les colonnes
         const colWidth = (pageW - margin * 2 - colGap) / 2;
-        const rowHeight = 22;
+        const rowHeight = 70; // hauteur de ligne augmentée
         const tableHeight = rows * rowHeight;
-        // compute start positions to vertically center table
+        // calcul du point de départ pour centrer verticalement
         const title = 'Demande de formation';
-        doc.setFontSize(18); doc.setFont(undefined,'bold');
-        const titleW = doc.getTextWidth ? doc.getTextWidth(title) : title.length * 6;
+        doc.setFontSize(22); doc.setFont(undefined,'bold');
+        const titleW = doc.getTextWidth ? doc.getTextWidth(title) : title.length * 8;
         const startY = Math.max(80, (pageH - tableHeight) / 2 + 10);
-        // draw title
-        doc.text(title, (pageW - titleW) / 2, startY - 18);
-        doc.setLineWidth(0.8);
-        doc.setDrawColor(100);
-        // draw table outer rect
+        // titre
+        doc.text(title, (pageW - titleW) / 2, startY - 28);
+        doc.setLineWidth(2.2); // lignes plus épaisses
+        doc.setDrawColor(44, 62, 80); // couleur plus foncée
+        // rectangle extérieur du tableau
         const tableX = margin;
         const tableW = pageW - margin * 2;
-        doc.rect(tableX, startY - 6, tableW, tableHeight + 6);
-        // draw horizontal lines
+        doc.rect(tableX, startY - 10, tableW, tableHeight + 20);
+        // lignes horizontales
         for (let i = 0; i <= rows; i++) {
           const y = startY + i * rowHeight;
           doc.line(tableX, y, tableX + tableW, y);
         }
-        // draw vertical mid line
+        // ligne verticale centrale
         const midX = tableX + colWidth + colGap / 2;
-        doc.line(midX, startY - 6, midX, startY + tableHeight + 6);
-        // render cells text
-        const leftX = tableX + 6;
-        const rightX = midX + 6;
-        doc.setFontSize(12); doc.setFont(undefined,'normal');
+        doc.line(midX, startY - 10, midX, startY + tableHeight + 10);
+        // texte dans les cellules
+        const leftX = tableX + 16;
+        const rightX = midX + 16;
+        doc.setFontSize(14); doc.setFont(undefined,'normal');
         for (let r = 0; r < rows; r++) {
           const li = r * 2;
           const left = entries[li];
           const right = entries[li + 1];
-          const cellY = startY + r * rowHeight + 14; // baseline
+          const cellY = startY + r * rowHeight + 26; // baseline ajustée
           if (left) {
             const text = left.k + ': ' + left.v;
-            const lines = doc.splitTextToSize(text, colWidth - 12);
+            const lines = doc.splitTextToSize(text, colWidth - 24);
             doc.text(lines, leftX, cellY);
           }
           if (right) {
             const text = right.k + ': ' + right.v;
-            const lines = doc.splitTextToSize(text, colWidth - 12);
+            const lines = doc.splitTextToSize(text, colWidth - 24);
             doc.text(lines, rightX, cellY);
           }
         }
@@ -189,11 +218,11 @@ function loadJsPDF(timeout = 5000) {
         // prepare WhatsApp message and redirect the user to WhatsApp (wa.me)
         try {
           const phone = '2250706591243'; // destination sans '+'
-          const preferred = ['company','domain','address','contact','email','type','employees','nif','rccm'];
+          const preferred = ['company','domain','address','contact','email','type','employees','nif','rccm','private_projects'];
           const metaObj = typeof meta === 'object' ? meta : JSON.parse(meta || '{}');
           const parts = [];
           preferred.forEach(k => {
-            if (metaObj[k]) parts.push(k.replace(/_/g,' ').toUpperCase() + ': ' + String(metaObj[k]));
+            if (metaObj[k]) parts.push(k.replace(/_/g,' ').toUpperCase() + ': ' + (Array.isArray(metaObj[k]) ? metaObj[k].join(', ') : String(metaObj[k])));
           });
           // add any other fields not in preferred order
           Object.keys(metaObj).forEach(k => { if (!preferred.includes(k) && metaObj[k]) parts.push(k.replace(/_/g,' ').toUpperCase() + ': ' + String(metaObj[k])); });
