@@ -44,8 +44,8 @@ define('MAIL_FROM', 'groupesupformation@gmail.com');
 define('MAIL_FROM_NAME', 'SupFormation'); 
 
 
-// Active le debug SMTP pour PHPMailer (0 = off, 2 = client+server). Mettre à 2 pour développement local.
-define('SMTP_DEBUG', 2);
+// Active le debug SMTP pour PHPMailer (0 = off, 2 = client+server)
+define('SMTP_DEBUG', 0); // Désactivé en production
 
 
 

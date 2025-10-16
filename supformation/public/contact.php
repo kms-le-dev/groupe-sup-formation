@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/../includes/config.php';
@@ -18,35 +19,60 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($nom) || empty($email) || empty($msg)) {
         $message = "Veuillez remplir tous les champs obligatoires.";
     } else {
-        // Prépare les données à envoyer à EmailJS
-        $data = [
-            'service_id' => 'default_service', // ou ton service ID exact si différent
-            'template_id' => 'template_o4eyaqn', // ton template ID
-            'user_id' => 'tKqFOfM8cHTyTPeG7', // ta clé publique EmailJS
-            'template_params' => [
-                'title' => "Contact Us",        // sujet ou titre
-                'name' => $nom,                 // nom envoyé au template
-                'email' => $email,              // email envoyé au template
-                // Si tu veux passer le téléphone et le message, il faut aussi modifier le template pour accepter ces variables !
-                'telephone' => $telephone,      
-                'message' => $msg
-            ]
-        ];
-
-        // Envoi de la requête HTTP POST vers EmailJS API
-        $ch = curl_init('https://api.emailjs.com/api/v1.0/email/send');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $response = curl_exec($ch);
-        $error = curl_error($ch);
-        curl_close($ch);
-
-        if ($error) {
-            $message = "Erreur lors de l'envoi : $error";
-        } else {
+        try {
+            $mail = new PHPMailer(true);
+            
+            // Configuration SMTP depuis config.php
+            $mail->isSMTP();
+            $mail->Host = SMTP_HOST;
+            $mail->Port = SMTP_PORT;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USER;
+            $mail->Password = SMTP_PASS;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            
+            // Debug mode si configuré
+            $mail->SMTPDebug = SMTP_DEBUG;
+            
+            // Format UTF-8
+            $mail->CharSet = 'UTF-8';
+            
+            // Expéditeur et destinataire
+            $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+            $mail->addAddress(SMTP_USER); // L'email sera envoyé à l'adresse configurée
+            $mail->addReplyTo($email, $nom); // Réponse ira à l'expéditeur du formulaire
+            
+            // Contenu
+            $mail->isHTML(true);
+            $mail->Subject = "Nouveau message de contact de $nom";
+            
+            // Corps du message en HTML
+            $mail->Body = "
+                <h2>Nouveau message de contact</h2>
+                <p><strong>Nom :</strong> {$nom}</p>
+                <p><strong>Email :</strong> {$email}</p>
+                <p><strong>Téléphone :</strong> {$telephone}</p>
+                <p><strong>Message :</strong></p>
+                <p>" . nl2br(htmlspecialchars($msg)) . "</p>
+            ";
+            
+            // Version texte pour les clients mail qui ne supportent pas l'HTML
+            $mail->AltBody = "
+                Nouveau message de contact
+                
+                Nom : {$nom}
+                Email : {$email}
+                Téléphone : {$telephone}
+                
+                Message :
+                {$msg}
+            ";
+            
+            $mail->send();
             $message = "Message envoyé avec succès !";
+            
+        } catch (Exception $e) {
+            $message = "Erreur lors de l'envoi : " . $mail->ErrorInfo;
         }
     }
 }
@@ -216,6 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
 }
 
 /* Couleurs spécifiques */
