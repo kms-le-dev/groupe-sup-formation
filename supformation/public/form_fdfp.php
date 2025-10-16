@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/header.php';
 // simple public form page for FDFP requests
 ?>
 <!doctype html>
@@ -26,7 +27,7 @@ require_once __DIR__ . '/../includes/functions.php';
 
 <body>
 <?php include 'loader.php'; ?>
-<?php include __DIR__ . '/../includes/header.php'; ?>
+
 <div class="container">
   <div class="fdfp-form">
     <h1>Demander une formation</h1>
@@ -165,8 +166,11 @@ function loadJsPDF(timeout = 5000) {
     }
 
     try {
+      console.log('Envoi du formulaire...');
       const res = await fetch('save_fdfp.php', { method:'POST', body: out });
+      console.log('Réponse reçue:', res.status);
       const json = await res.json();
+      console.log('Données reçues:', json);
       if (json.success) {
         // Force download: if we have a client-side blob, download it; otherwise fetch server PDF and download
         try {

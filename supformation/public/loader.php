@@ -58,13 +58,19 @@
 
 <script>
   // Quand la page est complètement chargée
-  document.addEventListener("readystatechange", () => {
-    if (document.readyState === "complete") {
-      const loader = document.getElementById("loader");
-      if (loader) {
-        loader.classList.add("hidden");
-        setTimeout(() => loader.remove(), 600); // suppression après transition
-      }
+  // Masquer le loader dès que possible
+  function hideLoader() {
+    const loader = document.getElementById("loader");
+    if (loader) {
+      loader.classList.add("hidden");
+      setTimeout(() => loader.remove(), 600);
     }
-  });
+  }
+  
+  // Écouter plusieurs événements pour s'assurer que le loader disparaît
+  document.addEventListener("DOMContentLoaded", hideLoader);
+  window.addEventListener("load", hideLoader);
+  
+  // Fallback : forcer la disparition après 5 secondes maximum
+  setTimeout(hideLoader, 5000);
 </script>
